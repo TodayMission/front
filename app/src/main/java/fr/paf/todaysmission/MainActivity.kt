@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -63,7 +64,7 @@ class MainActivity : ComponentActivity() {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
-        NavigationBar {
+        NavigationBar(containerColor = Color.White) {
             NavigationBarItem(
                 selected = currentRoute == "home",
                 onClick = { navController.navigate("home") },
@@ -84,25 +85,4 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
-
-//    @Composable
-//    fun HomeScreen() {
-//        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//            Text("Écran d'accueil", style = MaterialTheme.typography.headlineMedium)
-//        }
-//    }
-//
-//    @Composable
-//    fun SearchScreen() {
-//        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//            Text("Écran de recherche", style = MaterialTheme.typography.headlineMedium)
-//        }
-//    }
-//
-//    @Composable
-//    fun ProfileScreen() {
-//        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//            Text("Écran de profil", style = MaterialTheme.typography.headlineMedium)
-//        }
-//    }
 }
