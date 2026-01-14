@@ -19,13 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import fr.paf.todaysmission.components.GroupCard
 import fr.paf.todaysmission.models.Group
 import fr.paf.todaysmission.models.superGroups
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListGroupScreen(){
+fun ListGroupScreen(navController: NavController){
     Scaffold(
         containerColor = Color(0xFFf2f6fe),
         topBar = {
@@ -52,12 +53,14 @@ fun ListGroupScreen(){
             }
         },
     ) { innerPadding ->
-        // a changer plus tard blud
         LazyColumn(modifier = Modifier
             .padding(innerPadding)
             .padding(8.dp)) {
             itemsIndexed(superGroups) { index, superGroup ->
-                GroupCard(superGroups[index])
+                GroupCard(
+                    superGroups[index],
+                    navController
+                )
             }
         }
     }

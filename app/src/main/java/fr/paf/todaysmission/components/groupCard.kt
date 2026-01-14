@@ -28,23 +28,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import fr.paf.todaysmission.MainActivity.Companion.navController
 import fr.paf.todaysmission.models.Group
 
 @Composable
-fun GroupCard(group: Group) {
+fun GroupCard(group: Group, onClick: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp, 8.dp),
-        onClick = {
-            navController.navigate("group/${group.id}"){
-                popUpTo(navController.graph.findStartDestination().id) {
-                    saveState = true
-                };launchSingleTop = true;restoreState = true;
-            }
-        },
+        onClick = { onClick.navigate("group/${group.id}") },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
