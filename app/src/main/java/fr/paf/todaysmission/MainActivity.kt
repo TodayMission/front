@@ -1,6 +1,8 @@
 package fr.paf.todaysmission
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -23,21 +25,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import fr.paf.todaysmission.views.GroupScreen
 import fr.paf.todaysmission.views.HomeScreen
+import fr.paf.todaysmission.views.ListGroupScreen
 import fr.paf.todaysmission.views.SettingsScreen
 
-class MainActivity : ComponentActivity() {
+class   MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             AppNavigation()
         }
+    }
+
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        lateinit var navController: NavHostController;
     }
 
     @Composable
@@ -53,8 +64,20 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.padding(paddingValues)
             ) {
                 composable("home") { HomeScreen() }
-                composable("group") { GroupScreen() }
+                composable("group") { ListGroupScreen() }
                 composable("settings") { SettingsScreen() }
+                composable("group/{id}",
+                    arguments = listOf(
+                        navArgument("id") {
+                            type = NavType.StringType
+                            nullable = false
+                        }
+                    ))
+                { entry ->
+                    val id = entry.arguments?.getString("id") ?: "1"
+                    Log.d("GROUP", id)
+                    GroupScreen(id)
+                }
             }
         }
     }

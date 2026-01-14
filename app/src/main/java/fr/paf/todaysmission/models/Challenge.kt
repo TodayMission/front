@@ -1,4 +1,6 @@
 package fr.paf.todaysmission.models
 
-class challenge {
+class Challenge {
+
+
 }
