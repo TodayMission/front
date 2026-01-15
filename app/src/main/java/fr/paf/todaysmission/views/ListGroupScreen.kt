@@ -39,7 +39,7 @@ fun ListGroupScreen(){
                         Text("My Groups", textAlign = TextAlign.Center)
                     },
                     actions = {
-                        IconButton(onClick = {  }) // creation de groupe
+                        IconButton(onClick = { clickHandler("groups/create", "\"name\": \"MonGroupe\"")  }) // creation de groupe
                         {
                             Icon(
                                 imageVector = Icons.Default.Add,
