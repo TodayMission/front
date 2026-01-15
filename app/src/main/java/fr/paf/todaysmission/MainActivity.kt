@@ -100,7 +100,7 @@ class   MainActivity : ComponentActivity() {
                 { entry ->
                     val id = entry.arguments?.getString("id") ?: "1"
                     Log.d("GROUP", id)
-                    GroupScreen(id)
+                    GroupScreen(id, navController)
                 }
             }
         }
