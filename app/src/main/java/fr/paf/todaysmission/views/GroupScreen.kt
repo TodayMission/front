@@ -92,15 +92,15 @@ fun GroupScreen(id: String, navController: NavController){
         },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize().background(Color.White)) {
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(0.dp, 0.dp, 0.dp, 10.dp )) {
+            LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 10.dp )) {
                 itemsIndexed(msg_test) { index, msg ->
                     if (id == msg.group_id){
                         MessageCard(msg)
                     }
                 }
             }
-            BottomBar(showBottomSheet, onDismiss = { showBottomSheet = true })
         }
+        BottomBar(showBottomSheet, onDismiss = { showBottomSheet = true })
         if (showBottomSheet) {
             BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, true)
         }
@@ -111,7 +111,7 @@ fun GroupScreen(id: String, navController: NavController){
 fun BottomBar(showBottomSheet: Boolean, onDismiss: () -> Unit) {
     Box(
         modifier = Modifier
-            .fillMaxSize().padding(0.dp, 0.dp, 0.dp, 50.dp),
+            .fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
     ) {
         Row(
