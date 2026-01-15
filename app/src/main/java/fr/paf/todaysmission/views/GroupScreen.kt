@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.MessageCard
+import fr.paf.todaysmission.models.Group
 import fr.paf.todaysmission.models.msg_test
 import kotlinx.coroutines.launch
 
@@ -93,7 +94,6 @@ fun GroupScreen(id: String, navController: NavController){
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize().background(Color.White)) {
             LazyColumn(modifier = Modifier.fillMaxSize().padding(0.dp, 0.dp, 0.dp, 10.dp )) {
                 itemsIndexed(msg_test) { index, msg ->
-                    Log.d("TEST", id)
                     if (id == msg.group_id){
                         MessageCard(msg)
                     }
@@ -111,7 +111,7 @@ fun GroupScreen(id: String, navController: NavController){
 fun BottomBar(showBottomSheet: Boolean, onDismiss: () -> Unit) {
     Box(
         modifier = Modifier
-            .fillMaxSize().padding(0.dp, 0.dp, 0.dp, 20.dp),
+            .fillMaxSize().padding(0.dp, 0.dp, 0.dp, 50.dp),
         contentAlignment = Alignment.BottomCenter
     ) {
         Row(
