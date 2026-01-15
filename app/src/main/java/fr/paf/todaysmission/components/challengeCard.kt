@@ -21,9 +21,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import fr.paf.todaysmission.models.Challenge
 
 @Composable
-fun CourseCard() {
+fun ChallengeCard(challenge: Challenge) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -40,12 +41,12 @@ fun CourseCard() {
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Course matinale 5km",
+                        text = challenge.name,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Courir 5km avant 9h du matin",
+                        text = challenge.description,
                         fontSize = 16.sp,
                         color = Color.Gray,
                         modifier = Modifier.padding(top = 4.dp)
@@ -56,7 +57,7 @@ fun CourseCard() {
                     color = Color(0xFFD1FAE5)
                 ) {
                     Text(
-                        text = "En cours",
+                        text = challenge.status,
                         color = Color(0xFF059669),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
