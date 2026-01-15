@@ -14,18 +14,31 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.GroupCard
 import fr.paf.todaysmission.models.Group
 import fr.paf.todaysmission.models.superGroups
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListGroupScreen(){
+fun ListGroupScreen(navController: NavController){
+
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+
     Scaffold(
         containerColor = Color(0xFFf2f6fe),
         topBar = {
@@ -39,7 +52,7 @@ fun ListGroupScreen(){
                         Text("My Groups", textAlign = TextAlign.Center)
                     },
                     actions = {
-                        IconButton(onClick = { clickHandler("groups/create", "\"name\": \"MonGroupe\"")  }) // creation de groupe
+                        IconButton(onClick = { showBottomSheet = true }) // creation de groupe
                         {
                             Icon(
                                 imageVector = Icons.Default.Add,
@@ -52,13 +65,18 @@ fun ListGroupScreen(){
             }
         },
     ) { innerPadding ->
-        // a changer plus tard blud
         LazyColumn(modifier = Modifier
             .padding(innerPadding)
             .padding(8.dp)) {
             itemsIndexed(superGroups) { index, superGroup ->
-                GroupCard(superGroups[index])
+                GroupCard(
+                    superGroups[index],
+                    navController
+                )
             }
+        }
+        if (showBottomSheet){
+            BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, false)
         }
     }
 }

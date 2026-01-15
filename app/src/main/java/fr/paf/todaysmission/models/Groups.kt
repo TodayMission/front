@@ -13,6 +13,8 @@ data class Group(
     val unreadCount: Int
 ) : Parcelable
 
+
+
 val superGroups = listOf(
     Group(
         id = "1",
@@ -37,5 +39,5 @@ val superGroups = listOf(
         lastMessage = "Nouveau défi sport",
         lastMessageTime = "1h",
         unreadCount = 5
-    )
+    ),
 )
