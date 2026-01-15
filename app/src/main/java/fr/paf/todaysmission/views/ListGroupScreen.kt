@@ -30,6 +30,7 @@ import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.GroupCard
 import fr.paf.todaysmission.models.Group
 import fr.paf.todaysmission.models.superGroups
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,6 +39,7 @@ fun ListGroupScreen(navController: NavController){
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
+    var groupsValue by remember { mutableStateOf(superGroups) }
 
     Scaffold(
         containerColor = Color(0xFFf2f6fe),
@@ -68,15 +70,31 @@ fun ListGroupScreen(navController: NavController){
         LazyColumn(modifier = Modifier
             .padding(innerPadding)
             .padding(8.dp)) {
-            itemsIndexed(superGroups) { index, superGroup ->
+            itemsIndexed(groupsValue) { index, superGroup ->
                 GroupCard(
-                    superGroups[index],
+                    superGroup,
                     navController
                 )
             }
         }
         if (showBottomSheet){
-            BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, false)
+            BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, false, { nameValue ->
+                var result = clickHandler("/groups/create", "\"name\": \"$nameValue\"")
+                scope.launch {
+                    sheetState.hide()
+                    showBottomSheet = false
+                }
+                groupsValue += (
+                        Group(
+                            id = "4",
+                            name = nameValue,
+                            avatar = "L",
+                            lastMessage = "Nouveau défi sport",
+                            lastMessageTime = "2m",
+                            unreadCount = 3
+                        )
+                    )
+            })
         }
     }
 }

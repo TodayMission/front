@@ -15,7 +15,7 @@ data class Group(
 
 
 
-val superGroups = listOf(
+var superGroups = listOf(
     Group(
         id = "1",
         name = "Les Kiwis",

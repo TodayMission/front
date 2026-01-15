@@ -102,7 +102,7 @@ fun GroupScreen(id: String, navController: NavController){
             BottomBar(showBottomSheet, onDismiss = { showBottomSheet = true })
         }
         if (showBottomSheet) {
-            BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, true)
+//            BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, true)
         }
     }
 }

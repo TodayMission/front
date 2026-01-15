@@ -22,7 +22,7 @@ import java.io.IOException
 
 var token: String = "";
 var url: String = "http://10.57.32.5"
-var port: String = "3000"
+var port: String = "8080"
 
 @Composable
 fun SettingsScreen(){
