@@ -54,6 +54,7 @@ import androidx.navigation.NavController
 import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.MessageCard
 import fr.paf.todaysmission.models.Messages
+import fr.paf.todaysmission.models.Group
 import fr.paf.todaysmission.models.msg_test
 import kotlinx.coroutines.launch
 
@@ -94,16 +95,15 @@ fun GroupScreen(id: String, navController: NavController){
         },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize().background(Color.White)) {
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(0.dp, 0.dp, 0.dp, 10.dp )) {
+            LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 10.dp )) {
                 itemsIndexed(messages) { index, msg ->
-                    Log.d("TEST", id)
                     if (id == msg.group_id){
                         MessageCard(msg)
                     }
                 }
             }
-            BottomBar(showBottomSheet, onDismiss = { showBottomSheet = true })
         }
+        BottomBar(showBottomSheet, onDismiss = { showBottomSheet = true })
         if (showBottomSheet) {
             BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, true, {nameValue ->
                 showBottomSheet = false;
@@ -127,7 +127,7 @@ fun GroupScreen(id: String, navController: NavController){
 fun BottomBar(showBottomSheet: Boolean, onDismiss: () -> Unit) {
     Box(
         modifier = Modifier
-            .fillMaxSize().padding(0.dp, 0.dp, 0.dp, 20.dp),
+            .fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
     ) {
         Row(
