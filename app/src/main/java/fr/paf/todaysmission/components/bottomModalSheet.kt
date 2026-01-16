@@ -1,5 +1,6 @@
 package fr.paf.todaysmission.components
 
+import android.R
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,10 +33,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import fr.paf.todaysmission.models.Group
+import fr.paf.todaysmission.models.superGroups
+import fr.paf.todaysmission.views.clickHandler
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomModalSheet(showBottomSheet: Boolean, onDismiss: () -> Unit, sheetState: SheetState, isDefi: Boolean){
+fun BottomModalSheet(showBottomSheet: Boolean, onDismiss: () -> Unit, sheetState: SheetState, isDefi: Boolean, onSend: (text: String) -> Unit){
         val participants_test = listOf(
             "Theo",
             "To",
@@ -43,19 +49,22 @@ fun BottomModalSheet(showBottomSheet: Boolean, onDismiss: () -> Unit, sheetState
             "T"
         );
 
-    val title = if (isDefi) "Création d'un défi" else  "Création d'un groupe";
-    val name = if (isDefi) "Nom du défi" else  "Nom du groupe";
+        val title = if (isDefi) "Création d'un défi" else  "Création d'un groupe";
+        val name = if (isDefi) "Nom du défi" else  "Nom du groupe";
+        var nameValue by remember { mutableStateOf("") }
+        val scope = rememberCoroutineScope()
 
         ModalBottomSheet(
             onDismissRequest = onDismiss,
             sheetState = sheetState
+
         ) {
             Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(12.dp)) {
                 Text(title)
                 OutlinedTextField(
-                    value = "",
+                    value = nameValue,
                     singleLine = true,
-                    onValueChange = { },
+                    onValueChange = { nameValue = it},
                     placeholder = { Text(name, color = Color.Gray) },
                     modifier = Modifier.height(75.dp).padding(0.dp, 10.dp).fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
@@ -130,7 +139,7 @@ fun BottomModalSheet(showBottomSheet: Boolean, onDismiss: () -> Unit, sheetState
                         )
                     );
                 }
-                TextButton(onClick = {  }, shape = RoundedCornerShape(24.dp),
+                TextButton(onClick = { onSend(nameValue) }, shape = RoundedCornerShape(24.dp),
                     colors =
                         ButtonColors(
                             containerColor = Color(0xFF4F46E5),

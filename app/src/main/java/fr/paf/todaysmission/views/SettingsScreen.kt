@@ -22,7 +22,7 @@ import java.io.IOException
 
 var token: String = "";
 var url: String = "http://10.57.32.5"
-var port: String = "3000"
+var port: String = "8080"
 
 @Composable
 fun SettingsScreen(){
@@ -36,11 +36,11 @@ fun SettingsScreen(){
 fun APITestButton(){
 
     Button(onClick = {clickHandler("auth/login", "\"email\": \"paul@gmail.com\","+
-            "\"password\": \"paul\"")}) {
+            "\"password\": \"paul\"", {})}) {
         Text("Test API")
     }
 }
-fun clickHandler(route: String, args: String){
+fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit){
     Log.d("MINE", "Clicked")
     val JSON: MediaType = "application/json".toMediaType()
     val client: OkHttpClient = OkHttpClient()
@@ -77,6 +77,7 @@ fun clickHandler(route: String, args: String){
                     token = parsedBody.get("token") as String;
                 }
 
+                test(parsedBody)
                 Log.d("HTTP", "Réponse brute : ${parsedBody}")
             }
         }

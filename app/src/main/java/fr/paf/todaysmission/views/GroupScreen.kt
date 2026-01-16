@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.MessageCard
+import fr.paf.todaysmission.models.Messages
 import fr.paf.todaysmission.models.Group
 import fr.paf.todaysmission.models.msg_test
 import kotlinx.coroutines.launch
@@ -64,6 +65,8 @@ fun GroupScreen(id: String, navController: NavController){
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
+
+    var messages by remember { mutableStateOf(msg_test) }
 
 
     Scaffold(
@@ -93,7 +96,7 @@ fun GroupScreen(id: String, navController: NavController){
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize().background(Color.White)) {
             LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 10.dp )) {
-                itemsIndexed(msg_test) { index, msg ->
+                itemsIndexed(messages) { index, msg ->
                     if (id == msg.group_id){
                         MessageCard(msg)
                     }
@@ -102,7 +105,20 @@ fun GroupScreen(id: String, navController: NavController){
         }
         BottomBar(showBottomSheet, onDismiss = { showBottomSheet = true })
         if (showBottomSheet) {
-            BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, true)
+            BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, true, {nameValue ->
+                showBottomSheet = false;
+                var result = clickHandler("/challenges/create", "\"name\": \"$nameValue\", \"groupId\": \"1\"", { result ->
+                    messages += Messages(
+                        id = "1",
+                        nom = "SYSTEME",
+                        msg = "Challenge crée " + result.get("name"),
+                        group_id = result.get("groupId") as String
+                    )
+                })
+                scope.launch {
+                    sheetState.hide()
+                }
+            })
         }
     }
 }
