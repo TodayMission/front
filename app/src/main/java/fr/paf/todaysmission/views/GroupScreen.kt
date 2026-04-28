@@ -47,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,6 +63,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupScreen(id: String, navController: NavController){
+    val context = LocalContext.current
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
@@ -114,7 +116,7 @@ fun GroupScreen(id: String, navController: NavController){
                         msg = "Challenge crée " + result.get("name"),
                         group_id = result.get("groupId") as String
                     )
-                })
+                }, context)
                 scope.launch {
                     sheetState.hide()
                 }

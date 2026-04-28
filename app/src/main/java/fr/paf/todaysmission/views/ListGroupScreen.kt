@@ -23,23 +23,27 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.GroupCard
 import fr.paf.todaysmission.models.Group
-import fr.paf.todaysmission.models.superGroups
+import fr.paf.todaysmission.viewmodels.GroupsViewModels
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListGroupScreen(navController: NavController){
-
+fun ListGroupScreen(navController: NavController, groupsViewModel: GroupsViewModels = hiltViewModel()){
+    val context = LocalContext.current
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
-    var groupsValue by remember { mutableStateOf(superGroups) }
+    val groups by groupsViewModel.groups
 
     Scaffold(
         containerColor = Color(0xFFf2f6fe),
@@ -70,7 +74,7 @@ fun ListGroupScreen(navController: NavController){
         LazyColumn(modifier = Modifier
             .padding(innerPadding)
             .padding(8.dp)) {
-            itemsIndexed(groupsValue) { index, superGroup ->
+            itemsIndexed(groups) { index, superGroup ->
                 GroupCard(
                     superGroup,
                     navController
@@ -79,21 +83,11 @@ fun ListGroupScreen(navController: NavController){
         }
         if (showBottomSheet){
             BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, false, { nameValue ->
-                var result = clickHandler("/groups/create", "\"name\": \"$nameValue\"", {})
+                var result = clickHandler("/groups/create", "\"name\": \"$nameValue\"", {}, context)
                 scope.launch {
                     sheetState.hide()
                     showBottomSheet = false
                 }
-                groupsValue += (
-                        Group(
-                            id = "4",
-                            name = nameValue,
-                            avatar = "L",
-                            lastMessage = "Nouveau défi sport",
-                            lastMessageTime = "2m",
-                            unreadCount = 3
-                        )
-                    )
             })
         }
     }

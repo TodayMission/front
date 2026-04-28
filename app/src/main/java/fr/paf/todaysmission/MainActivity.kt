@@ -37,11 +37,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
 import fr.paf.todaysmission.views.GroupScreen
 import fr.paf.todaysmission.views.HomeScreen
 import fr.paf.todaysmission.views.ListGroupScreen
 import fr.paf.todaysmission.views.SettingsScreen
 
+@AndroidEntryPoint
 class   MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
