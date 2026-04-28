@@ -5,12 +5,15 @@ import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.paf.todaysmission.models.Group
 import fr.paf.todaysmission.utils.TokenManager
+import fr.paf.todaysmission.views.clickHandler
 import fr.paf.todaysmission.views.token
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import javax.inject.Inject
 
@@ -21,6 +24,22 @@ class GroupsRepository @Inject constructor(
     private val _baseUrl = "http://10.57.32.5:3000"
     private val _token = runBlocking {
         TokenManager.getToken(context) as String
+    }
+
+    suspend fun createGroup(name: String) = withContext(Dispatchers.IO){
+        val json = """{ "name": "$name" }"""
+
+        val body = json.toRequestBody("application/json".toMediaType())
+
+        val request = Request.Builder()
+            .url("$_baseUrl/groups/create")
+            .addHeader("Authorization", "Bearer $_token")
+            .post(body)
+            .build()
+
+        _client.newCall(request).execute()
+//        var result = clickHandler("groups/create", "\"name\": \"$name\"", {}, context)
+
     }
 
     suspend fun getGroups(): List<Group> = withContext(Dispatchers.IO){

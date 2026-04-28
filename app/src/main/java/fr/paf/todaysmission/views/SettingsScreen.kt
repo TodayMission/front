@@ -15,6 +15,7 @@ import fr.paf.todaysmission.utils.TokenManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType
@@ -48,6 +49,10 @@ fun APITestButton(){
 }
 fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit, context: Context)
 {
+    Log.d("MINE", "pouroud")
+    token = runBlocking {
+        TokenManager.getToken(context) as String
+    }
     Log.d("MINE", "Clicked")
     val JSON: MediaType = "application/json".toMediaType()
     val client: OkHttpClient = OkHttpClient()

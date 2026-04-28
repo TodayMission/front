@@ -28,5 +28,12 @@ class GroupsViewModels @Inject constructor(private val groupsRepository: GroupsR
         }
     }
 
+    fun createGroup(name: String) {
+        viewModelScope.launch {
+            groupsRepository.createGroup(name)
+            getGroups() // 🔥 refresh after creation
+        }
+    }
+
 
 }

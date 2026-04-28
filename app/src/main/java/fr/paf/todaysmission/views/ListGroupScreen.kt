@@ -83,11 +83,12 @@ fun ListGroupScreen(navController: NavController, groupsViewModel: GroupsViewMod
         }
         if (showBottomSheet){
             BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, false, { nameValue ->
-                var result = clickHandler("/groups/create", "\"name\": \"$nameValue\"", {}, context)
+                groupsViewModel.createGroup(nameValue)
                 scope.launch {
                     sheetState.hide()
                     showBottomSheet = false
                 }
+
             })
         }
     }
