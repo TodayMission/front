@@ -20,9 +20,10 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
-var token: String = "";
-var url: String = "http://10.57.32.5"
-var port: String = "8080"
+var token: String = ""
+var userId: String = ""
+var url: String = "http://10.0.2.2"
+var port: String = "3000"
 
 @Composable
 fun SettingsScreen(){
@@ -34,51 +35,63 @@ fun SettingsScreen(){
 
 @Composable
 fun APITestButton(){
-
-    Button(onClick = {clickHandler("auth/login", "\"email\": \"paul@gmail.com\","+
-            "\"password\": \"paul\"", {})}) {
+    Button(onClick = {clickHandler("auth/login", "\"email\": \"caca@gmail.com\","+
+            "\"password\": \"caca\"", {})}) {
         Text("Test API")
     }
 }
+
 fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit){
-    Log.d("MINE", "Clicked")
+    Log.d("MINE", "Clicked $route")
     val JSON: MediaType = "application/json".toMediaType()
     val client: OkHttpClient = OkHttpClient()
 
-    val json: String = "{" + args +
-        "}";
-
+    val json: String = if (args.isEmpty()) "{}" else "{$args}"
     val body: RequestBody = RequestBody.create(JSON, json)
 
     val request: Request = Request.Builder()
-        .url("$url:$port/" + route)
+        .url("$url:$port/$route")
         .post(body)
         .addHeader("Authorization", "Bearer $token")
         .build()
 
     client.newCall(request).enqueue(object : Callback {
-
         override fun onFailure(call: Call, e: IOException) {
             Log.e("HTTP", "Erreur réseau", e)
         }
 
         override fun onResponse(call: Call, response: Response) {
-
             response.use {
-                if (!it.isSuccessful) {
-                    Log.e("HTTP", "Code erreur : ${it.code}")
-                    return
+                val bodyStr = it.body?.string()
+                Log.d("HTTP", "Code: ${it.code}, Réponse brute : $bodyStr")
+
+                if (!it.isSuccessful) return
+
+                try {
+                    val parsedBody = JSONObject(bodyStr ?: "{}")
+
+                    // Récupération du TOKEN
+                    if (parsedBody.has("token")) {
+                        token = parsedBody.getString("token")
+                    }
+
+                    // Récupération du USER ID (plusieurs cas possibles)
+                    if (parsedBody.has("userId")) {
+                        userId = parsedBody.getString("userId")
+                    } else if (parsedBody.has("id")) {
+                        userId = parsedBody.getString("id")
+                    } else if (parsedBody.has("user")) {
+                        val userObj = parsedBody.getJSONObject("user")
+                        if (userObj.has("id")) userId = userObj.getString("id")
+                    }
+                    
+                    Log.d("HTTP", "Token actuel: $token")
+                    Log.d("HTTP", "UserId actuel: $userId")
+
+                    test(parsedBody)
+                } catch (e: Exception) {
+                    Log.e("HTTP", "Erreur parsing JSON", e)
                 }
-
-                val body = it.body?.string() // ⚠️ lisible UNE seule fois
-                val parsedBody = JSONObject(body);
-
-                if(token.isEmpty()){
-                    token = parsedBody.get("token") as String;
-                }
-
-                test(parsedBody)
-                Log.d("HTTP", "Réponse brute : ${parsedBody}")
             }
         }
     })
