@@ -47,7 +47,7 @@ class GroupsRepository @Inject constructor(
             list.add(
                 Group(
                     id = obj.optString("group_id"),
-                    name = obj.optString("group_id", "Unknown")
+                    name = obj.optString("name", "Unknown")
                 )
             )
         }
