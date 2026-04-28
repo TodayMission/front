@@ -15,13 +15,14 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
+import java.net.SocketTimeoutException
 import javax.inject.Inject
 
 class GroupsRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ){
     private val _client = OkHttpClient()
-    private val _baseUrl = "http://10.57.32.5:3000"
+    private val _baseUrl = "http://192.168.1.81:3000"
     private val _token = runBlocking {
         TokenManager.getToken(context) as String
     }
@@ -42,18 +43,21 @@ class GroupsRepository @Inject constructor(
 
     }
 
-    suspend fun getGroups(): List<Group> = withContext(Dispatchers.IO){
+    suspend fun getGroups(): Result<List<Group>> = withContext(Dispatchers.IO){
         Log.d("MINE", "Le token est $_token")
         val request = Request.Builder()
             .url("$_baseUrl/me/groups")
             .addHeader("Authorization", "Bearer $_token")
             .build()
 
-        val response = _client.newCall(request).execute()
+        try {
+            val response = _client.newCall(request).execute()
+            val body = parseGroups(response.body!!.string()) ?: emptyList<Group>();
+            Result.success(body)
+        } catch(e: Exception) {
+            Result.failure(e)
+        }
 
-        val body = parseGroups(response.body!!.string()) ?: emptyList<Group>();
-
-        return@withContext body
     }
 
     private fun parseGroups(json: String): List<Group> {

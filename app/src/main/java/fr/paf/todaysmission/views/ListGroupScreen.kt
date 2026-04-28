@@ -1,10 +1,14 @@
 package fr.paf.todaysmission.views
 
+import android.widget.Toast
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,6 +20,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +40,7 @@ import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.GroupCard
 import fr.paf.todaysmission.models.Group
 import fr.paf.todaysmission.viewmodels.GroupsViewModels
+import fr.paf.todaysmission.viewmodels.State
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,7 +50,15 @@ fun ListGroupScreen(navController: NavController, groupsViewModel: GroupsViewMod
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
-    val groups by groupsViewModel.groups
+    val groups by groupsViewModel.groups.collectAsState()
+    val error by groupsViewModel.error.collectAsState()
+    val state by groupsViewModel.state.collectAsState()
+
+    LaunchedEffect(error) {
+        error?.let {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+        }
+    }
 
     Scaffold(
         containerColor = Color(0xFFf2f6fe),
@@ -71,14 +86,29 @@ fun ListGroupScreen(navController: NavController, groupsViewModel: GroupsViewMod
             }
         },
     ) { innerPadding ->
-        LazyColumn(modifier = Modifier
-            .padding(innerPadding)
-            .padding(8.dp)) {
-            itemsIndexed(groups) { index, superGroup ->
-                GroupCard(
-                    superGroup,
-                    navController
-                )
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
+            when (state) {
+                State.LOADING -> CircularProgressIndicator()
+                State.SUCCESS -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .padding(8.dp)
+                    ) {
+                        itemsIndexed(groups) { index, superGroup ->
+                            GroupCard(
+                                superGroup,
+                                navController
+                            )
+                        }
+                    }
+                }
+
+                State.ERROR -> Text("Error")
             }
         }
         if (showBottomSheet){

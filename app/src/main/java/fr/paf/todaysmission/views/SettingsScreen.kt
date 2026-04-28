@@ -28,7 +28,7 @@ import org.json.JSONObject
 import java.io.IOException
 
 var token: String = "";
-var url: String = "http://10.57.32.5"
+var url: String = "http://192.168.1.81"
 var port: String = "3000"
 
 @Composable
