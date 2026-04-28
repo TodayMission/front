@@ -115,12 +115,11 @@ fun GroupScreen(id: String, navController: NavController){
             BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, true, { nameValue ->
                 showBottomSheet = false
                 
-                // Vérification si l'utilisateur est connecté
+                //verif if user is connected
                 if (userId.isEmpty()) {
                     Log.e("HTTP", "Erreur : userId est vide. Connectez-vous d'abord dans Settings.")
                 }
 
-                // On passe les paramètres dans la Query String car le back utilise req.query
                 val route = "challenges/create?name=$nameValue&groupId=$id"
                 Log.d("HTTP", "Tentative de création : $route")
                 
@@ -213,7 +212,6 @@ fun BottomBar(
 }
 
 fun joinChallenge(challengeId: String, userId: String, onSuccess: (String) -> Unit) {
-    // On passe les paramètres dans la Query String car le back utilise req.query
     val route = "challenges/join?challengeId=$challengeId&userId=$userId"
 
     clickHandler(route, "") { response ->

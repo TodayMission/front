@@ -70,7 +70,7 @@ fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit){
                 try {
                     val parsedBody = JSONObject(bodyStr ?: "{}")
 
-                    // Récupération du TOKEN
+                    //get token
                     if (parsedBody.has("token")) {
                         token = parsedBody.getString("token")
                     }
