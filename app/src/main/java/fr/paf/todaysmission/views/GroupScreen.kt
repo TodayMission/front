@@ -98,7 +98,7 @@ fun GroupScreen(id: String, navController: NavController){
                     if (id == msg.group_id){
                         MessageCard(msg)
                         if (msg.nom == "SYSTEME") {
-                            JoinChallengeButton(challengeId = msg.id, userId = userId) { message ->
+                            JoinChallengeButton(challengeId = msg.id, context = context) { message ->
                                 Log.d("JoinChallenge", message)
                             }
                         }
@@ -127,14 +127,16 @@ fun GroupScreen(id: String, navController: NavController){
                     Log.e("HTTP", "Erreur : userId est vide. Connectez-vous d'abord dans Settings.")
                 }
 
-                val route = "challenges/create?name=$nameValue&groupId=$id"
+                val route = "challenges/create"
+                val args = "\"name\": \"$nameValue\", \"groupId\": \"$id\""
                 Log.d("HTTP", "Tentative de création : $route")
                 
-                clickHandler(route, "", { result ->
+                clickHandler(route, args, { result ->
                     val challengeName = result.optString("message", nameValue)
+                    val challengeId = result.optString("challengeId", (messages.size + 1).toString())
                     
                     messages = messages + Messages(
-                        id = (messages.size + 1).toString(),
+                        id = challengeId,
                         nom = "SYSTEME",
                         msg = "Challenge crée $challengeName",
                         group_id = id
@@ -218,19 +220,20 @@ fun BottomBar(
     }
 }
 
-fun joinChallenge(challengeId: String, userId: String, onSuccess: (String) -> Unit) {
-    val route = "challenges/join?challengeId=$challengeId&userId=$userId"
+fun joinChallenge(challengeId: String, context: android.content.Context, onSuccess: (String) -> Unit) {
+    val route = "challenges/join"
+    val args = "\"challengeId\": \"$challengeId\""
 
-    clickHandler(route, "") { response ->
+    clickHandler(route, args, { response ->
         onSuccess(response.optString("message", "Succès"))
-    }
+    }, context)
 }
 
 @Composable
-fun JoinChallengeButton(challengeId: String, userId: String, onJoinSuccess: (String) -> Unit) {
+fun JoinChallengeButton(challengeId: String, context: android.content.Context, onJoinSuccess: (String) -> Unit) {
     Button(
         onClick = {
-            joinChallenge(challengeId, userId) { message ->
+            joinChallenge(challengeId, context) { message ->
                 onJoinSuccess(message)
             }
         },
