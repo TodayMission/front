@@ -41,6 +41,7 @@ import fr.paf.todaysmission.views.GroupScreen
 import fr.paf.todaysmission.views.HomeScreen
 import fr.paf.todaysmission.views.ListGroupScreen
 import fr.paf.todaysmission.views.SettingsScreen
+import fr.paf.todaysmission.views.UploadScreen
 
 class   MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,7 +88,7 @@ class   MainActivity : ComponentActivity() {
                 startDestination = "home",
                 modifier = Modifier.padding(paddingValues)
             ) {
-                composable("home") { HomeScreen() }
+                composable("home") { HomeScreen(navController) }
                 composable("groups") { ListGroupScreen(navController) }
                 composable("settings") { SettingsScreen() }
                 composable("group/{id}",
@@ -101,6 +102,17 @@ class   MainActivity : ComponentActivity() {
                     val id = entry.arguments?.getString("id") ?: "1"
                     Log.d("GROUP", id)
                     GroupScreen(id, navController)
+                }
+                composable(
+                    route = "upload/{id}",
+                    arguments = listOf(
+                        navArgument("id") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { entry ->
+                    val id = entry.arguments?.getString("id")
+                    UploadScreen(id)
                 }
             }
         }
