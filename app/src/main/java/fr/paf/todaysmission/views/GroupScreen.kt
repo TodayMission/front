@@ -1,6 +1,5 @@
 package fr.paf.todaysmission.views
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -62,12 +61,13 @@ fun GroupScreen(
     id: String,
     navController: NavController,
     challengesViewModel: ChallengesViewModel = hiltViewModel()
-){
+) {
     val context = LocalContext.current
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     val joinMessage by challengesViewModel.message.collectAsState()
+    val createdChallenge by challengesViewModel.createdChallenge.collectAsState()
 
     var messages by remember { mutableStateOf(msg_test) }
 
@@ -78,6 +78,17 @@ fun GroupScreen(
         }
     }
 
+    LaunchedEffect(createdChallenge) {
+        createdChallenge?.let {
+            messages = messages + Messages(
+                id = it.challengeId ?: (messages.size + 1).toString(),
+                nom = "SYSTEME",
+                msg = "Challenge crée ${it.name}",
+                group_id = id
+            )
+            challengesViewModel.clearCreatedChallenge()
+        }
+    }
     Scaffold(
         containerColor = Color(0xFFf2f6fe),
         topBar = {
@@ -104,9 +115,9 @@ fun GroupScreen(
         },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize().background(Color.White)) {
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 10.dp )) {
-                itemsIndexed(messages) { index, msg ->
-                    if (id == msg.group_id){
+            LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 10.dp)) {
+                itemsIndexed(messages) { _, msg ->
+                    if (id == msg.group_id) {
                         MessageCard(msg)
                         if (msg.nom == "SYSTEME") {
                             JoinChallengeButton {
@@ -132,27 +143,7 @@ fun GroupScreen(
         if (showBottomSheet) {
             BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, true, { nameValue ->
                 showBottomSheet = false
-                
-                //verif if user is connected
-                if (userId.isEmpty()) {
-                    Log.e("HTTP", "Erreur : userId est vide. Connectez-vous d'abord dans Settings.")
-                }
-
-                val route = "challenges/create"
-                val args = "\"name\": \"$nameValue\", \"groupId\": \"$id\""
-                Log.d("HTTP", "Tentative de création : $route")
-                
-                clickHandler(route, args, { result ->
-                    val challengeName = result.optString("message", nameValue)
-                    val challengeId = result.optString("challengeId", (messages.size + 1).toString())
-                    
-                    messages = messages + Messages(
-                        id = challengeId,
-                        nom = "SYSTEME",
-                        msg = "Challenge crée $challengeName",
-                        group_id = id
-                    )
-                }, context)
+                challengesViewModel.createChallenge(nameValue, id)
                 scope.launch {
                     sheetState.hide()
                 }
