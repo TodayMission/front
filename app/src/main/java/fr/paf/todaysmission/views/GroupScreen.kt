@@ -1,9 +1,7 @@
 package fr.paf.todaysmission.views
 
-import android.R
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,6 +35,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,26 +45,38 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.MessageCard
 import fr.paf.todaysmission.models.Messages
 import fr.paf.todaysmission.models.msg_test
+import fr.paf.todaysmission.viewmodels.ChallengesViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupScreen(id: String, navController: NavController){
+fun GroupScreen(
+    id: String,
+    navController: NavController,
+    challengesViewModel: ChallengesViewModel = hiltViewModel()
+){
     val context = LocalContext.current
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
+    val joinMessage by challengesViewModel.message.collectAsState()
 
     var messages by remember { mutableStateOf(msg_test) }
 
+    LaunchedEffect(joinMessage) {
+        joinMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            challengesViewModel.clearMessage()
+        }
+    }
 
     Scaffold(
         containerColor = Color(0xFFf2f6fe),
@@ -98,8 +109,8 @@ fun GroupScreen(id: String, navController: NavController){
                     if (id == msg.group_id){
                         MessageCard(msg)
                         if (msg.nom == "SYSTEME") {
-                            JoinChallengeButton(challengeId = msg.id, context = context) { message ->
-                                Log.d("JoinChallenge", message)
+                            JoinChallengeButton {
+                                challengesViewModel.joinChallenge(msg.id)
                             }
                         }
                     }
@@ -220,23 +231,10 @@ fun BottomBar(
     }
 }
 
-fun joinChallenge(challengeId: String, context: android.content.Context, onSuccess: (String) -> Unit) {
-    val route = "challenges/join"
-    val args = "\"challengeId\": \"$challengeId\""
-
-    clickHandler(route, args, { response ->
-        onSuccess(response.optString("message", "Succès"))
-    }, context)
-}
-
 @Composable
-fun JoinChallengeButton(challengeId: String, context: android.content.Context, onJoinSuccess: (String) -> Unit) {
+fun JoinChallengeButton(onClick: () -> Unit) {
     Button(
-        onClick = {
-            joinChallenge(challengeId, context) { message ->
-                onJoinSuccess(message)
-            }
-        },
+        onClick = onClick,
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth(),
