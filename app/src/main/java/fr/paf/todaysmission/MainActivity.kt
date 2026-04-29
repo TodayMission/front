@@ -42,6 +42,7 @@ import dagger.hilt.android.HiltAndroidApp
 import fr.paf.todaysmission.views.GroupScreen
 import fr.paf.todaysmission.views.HomeScreen
 import fr.paf.todaysmission.views.ListGroupScreen
+import fr.paf.todaysmission.views.LoginScreen
 import fr.paf.todaysmission.views.SettingsScreen
 
 @AndroidEntryPoint
@@ -71,6 +72,9 @@ class   MainActivity : ComponentActivity() {
             "home" -> {
                 bottomBarState.value = true
             }
+            "login" -> {
+                bottomBarState.value = false
+            }
             "groups" -> {
                 bottomBarState.value = true
             }
@@ -87,9 +91,19 @@ class   MainActivity : ComponentActivity() {
         ) { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = "home",
+                startDestination = "login", // à changer pour spawn sur une autre page
                 modifier = Modifier.padding(paddingValues)
             ) {
+                composable("login") {
+                    LoginScreen(
+                        onSuccess = {
+                            navController.navigate("home") {
+                                popUpTo("login") { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
                 composable("home") { HomeScreen() }
                 composable("groups") { ListGroupScreen(navController) }
                 composable("settings") { SettingsScreen() }
