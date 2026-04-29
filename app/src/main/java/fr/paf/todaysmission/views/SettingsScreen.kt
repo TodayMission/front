@@ -3,6 +3,7 @@ package fr.paf.todaysmission.views
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -27,9 +28,8 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
-var token: String = ""
-var userId: String = ""
-var url: String = "http://10.0.2.2"
+var token: String = "";
+var url: String = "http://192.168.1.14"
 var port: String = "3000"
 
 @Composable
@@ -43,9 +43,16 @@ fun SettingsScreen(){
 @Composable
 fun APITestButton(){
     val context = LocalContext.current
-    Button(onClick = {clickHandler("auth/login", "\"email\": \"paul@gmail.com\","+
-            "\"password\": \"paul\"", {}, context)}) {
-        Text("Test API")
+    Row() {
+        Button(onClick = {clickHandler("auth/login", "\"email\": \"paul@gmail.com\","+
+                "\"password\": \"paul\"", {}, context)}) {
+            Text("Paul")
+        }
+
+        Button(onClick = {clickHandler("auth/login", "\"email\": \"test@email.com\","+
+                "\"password\": \"password\"", {}, context)}) {
+            Text("Test")
+        }
     }
 }
 fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit, context: Context)
@@ -82,30 +89,13 @@ fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit, 
                 try {
                     val parsedBody = JSONObject(bodyStr ?: "{}")
 
-                    //get token
-                    if (parsedBody.has("token")) {
-                        token = parsedBody.getString("token")
-                    }
-
-                    // get userId 
-                    if (parsedBody.has("userId")) {
-                        userId = parsedBody.getString("userId")
-                    } else if (parsedBody.has("id")) {
-                        userId = parsedBody.getString("id")
-                    } else if (parsedBody.has("user")) {
-                        val userObj = parsedBody.getJSONObject("user")
-                        if (userObj.has("id")) userId = userObj.getString("id")
-                    }
-                    
-                    Log.d("HTTP", "Token actuel: $token")
-                    Log.d("HTTP", "UserId actuel: $userId")
-                if (token.isEmpty()) {
+//                if (token.isEmpty()) {
                     token = parsedBody.getString("token")
 
                     CoroutineScope(Dispatchers.IO).launch {
                         TokenManager.saveToken(context, token)
                     }
-                }
+//                }
 
                     test(parsedBody)
                 } catch (e: Exception) {

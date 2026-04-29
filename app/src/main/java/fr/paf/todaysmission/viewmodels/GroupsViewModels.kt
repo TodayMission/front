@@ -1,7 +1,6 @@
 package fr.paf.todaysmission.viewmodels
 
 import android.widget.Toast
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -14,18 +13,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
 import javax.inject.Inject
-
-
-enum class State {
-    LOADING,
-    SUCCESS,
-    ERROR,
-}
+import fr.paf.todaysmission.utils.State
 
 @HiltViewModel
 class GroupsViewModels @Inject constructor(private val groupsRepository: GroupsRepository): ViewModel() {
 
-    private val _state = MutableStateFlow(fr.paf.todaysmission.viewmodels.State.LOADING)
+    private val _state = MutableStateFlow(State.LOADING)
     val state = _state
     private val _groups = MutableStateFlow<List<Group>>(emptyList<Group>())
     val groups = _groups
@@ -40,14 +33,14 @@ class GroupsViewModels @Inject constructor(private val groupsRepository: GroupsR
     private fun getGroups() {
 
         viewModelScope.launch {
-            state.value = fr.paf.todaysmission.viewmodels.State.LOADING
+            state.value = State.LOADING
            val result = groupsRepository.getGroups()
 
             result.onSuccess {
                 _groups.value = it.sortedByDescending{ it.id.toInt() }
-                state.value = fr.paf.todaysmission.viewmodels.State.SUCCESS
+                state.value = State.SUCCESS
             }.onFailure {
-                state.value = fr.paf.todaysmission.viewmodels.State.ERROR
+                state.value = State.ERROR
                 error.emit("Serveur timeout")
             }
         }
