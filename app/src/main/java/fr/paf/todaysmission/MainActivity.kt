@@ -45,6 +45,7 @@ import fr.paf.todaysmission.views.InviteScreen
 import fr.paf.todaysmission.views.ListGroupScreen
 import fr.paf.todaysmission.views.NotifyScreen
 import fr.paf.todaysmission.views.SettingsScreen
+import fr.paf.todaysmission.views.UploadScreen
 
 @AndroidEntryPoint
 class   MainActivity : ComponentActivity() {
@@ -123,6 +124,16 @@ class   MainActivity : ComponentActivity() {
                     Log.d("GROUP", id)
                     GroupScreen(id, navController)
                 }
+                composable(
+                    route = "upload/{id}",
+                    arguments = listOf(
+                        navArgument("id") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { entry ->
+                    val id = entry.arguments?.getString("id")
+                    UploadScreen(id)
                 composable("friends") { FriendScreen(navController) }
                 composable("notif") { NotifyScreen() }
                 composable("invite/{id}") { entry ->
