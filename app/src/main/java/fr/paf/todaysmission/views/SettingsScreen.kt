@@ -75,7 +75,7 @@ fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit){
                         token = parsedBody.getString("token")
                     }
 
-                    // Récupération du USER ID (plusieurs cas possibles)
+                    // get userId 
                     if (parsedBody.has("userId")) {
                         userId = parsedBody.getString("userId")
                     } else if (parsedBody.has("id")) {
