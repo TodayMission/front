@@ -80,6 +80,9 @@ class   MainActivity : ComponentActivity() {
             "group/{id}" -> {
                 bottomBarState.value = false
             }
+            "friends" -> {
+
+            }
         }
 
         Scaffold(
@@ -105,6 +108,7 @@ class   MainActivity : ComponentActivity() {
                     Log.d("GROUP", id)
                     GroupScreen(id, navController)
                 }
+                composable("friends") { FriendScreen(navController) }
             }
         }
     }

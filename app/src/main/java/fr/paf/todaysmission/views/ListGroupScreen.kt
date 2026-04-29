@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -40,7 +41,7 @@ import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.GroupCard
 import fr.paf.todaysmission.models.Group
 import fr.paf.todaysmission.viewmodels.GroupsViewModels
-import fr.paf.todaysmission.viewmodels.State
+import fr.paf.todaysmission.utils.State
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,6 +74,14 @@ fun ListGroupScreen(navController: NavController, groupsViewModel: GroupsViewMod
                         Text("My Groups", textAlign = TextAlign.Center)
                     },
                     actions = {
+                        IconButton(onClick = { navController.navigate("friends") }) // creation de groupe
+                        {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = null,
+                                tint = Color.Blue
+                            )
+                        }
                         IconButton(onClick = { showBottomSheet = true }) // creation de groupe
                         {
                             Icon(
