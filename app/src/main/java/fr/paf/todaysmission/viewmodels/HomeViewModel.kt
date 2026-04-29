@@ -1,10 +1,9 @@
-package fr.paf.todaysmission.viewModel
+package fr.paf.todaysmission.viewmodels
 
 import androidx.lifecycle.ViewModel
 import fr.paf.todaysmission.models.Challenge
 import fr.paf.todaysmission.models.superChallenge
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 data class HomeUiState(
     val pendingChallenges: List<Challenge> = superChallenge,
