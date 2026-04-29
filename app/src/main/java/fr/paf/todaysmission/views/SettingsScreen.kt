@@ -1,5 +1,6 @@
 package fr.paf.todaysmission.views
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import fr.paf.todaysmission.utils.TokenManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType
@@ -21,8 +28,8 @@ import org.json.JSONObject
 import java.io.IOException
 
 var token: String = "";
-var url: String = "http://10.57.32.5"
-var port: String = "8080"
+var url: String = "http://192.168.1.81"
+var port: String = "3000"
 
 @Composable
 fun SettingsScreen(){
@@ -34,13 +41,18 @@ fun SettingsScreen(){
 
 @Composable
 fun APITestButton(){
-
+    val context = LocalContext.current
     Button(onClick = {clickHandler("auth/login", "\"email\": \"paul@gmail.com\","+
-            "\"password\": \"paul\"", {})}) {
+            "\"password\": \"paul\"", {}, context)}) {
         Text("Test API")
     }
 }
-fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit){
+fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit, context: Context)
+{
+    Log.d("MINE", "pouroud")
+    token = runBlocking {
+        TokenManager.getToken(context) as String
+    }
     Log.d("MINE", "Clicked")
     val JSON: MediaType = "application/json".toMediaType()
     val client: OkHttpClient = OkHttpClient()
@@ -73,8 +85,12 @@ fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit){
                 val body = it.body?.string() // ⚠️ lisible UNE seule fois
                 val parsedBody = JSONObject(body);
 
-                if(token.isEmpty()){
-                    token = parsedBody.get("token") as String;
+                if (token.isEmpty()) {
+                    token = parsedBody.getString("token")
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        TokenManager.saveToken(context, token)
+                    }
                 }
 
                 test(parsedBody)
