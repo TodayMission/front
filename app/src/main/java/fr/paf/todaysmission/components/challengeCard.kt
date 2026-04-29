@@ -1,5 +1,6 @@
 package fr.paf.todaysmission.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,11 +25,12 @@ import androidx.compose.ui.unit.sp
 import fr.paf.todaysmission.models.Challenge
 
 @Composable
-fun ChallengeCard(challenge: Challenge) {
+fun ChallengeCard(challenge: Challenge, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp, 8.dp),
+            .padding(12.dp, 8.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

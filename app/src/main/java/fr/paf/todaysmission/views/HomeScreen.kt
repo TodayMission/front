@@ -17,13 +17,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import fr.paf.todaysmission.components.ChallengeCard
 import fr.paf.todaysmission.models.superChallenge
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(){
+fun HomeScreen(navController: NavController){
     Scaffold(
         containerColor = Color(0xFFf2f6fe),
         topBar = {
@@ -56,7 +57,7 @@ fun HomeScreen(){
                     )
                 }
                 itemsIndexed(challengesPendings) { index, challenge ->
-                    ChallengeCard(challenge)
+                    ChallengeCard(challenge, {navController.navigate("upload/${challenge.id}")})
                 }
             }
 
@@ -71,7 +72,7 @@ fun HomeScreen(){
                     )
                 }
                 itemsIndexed(challengesFinish) { index, challenge ->
-                    ChallengeCard(challenge)
+                    ChallengeCard(challenge, {navController.navigate("upload/${challenge.id}")})
                 }
             }
         }
