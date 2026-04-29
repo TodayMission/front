@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -74,6 +75,14 @@ fun ListGroupScreen(navController: NavController, groupsViewModel: GroupsViewMod
                         Text("My Groups", textAlign = TextAlign.Center)
                     },
                     actions = {
+                        IconButton(onClick = { navController.navigate("notif") }) // creation de groupe
+                        {
+                            Icon(
+                                imageVector = Icons.Default.Notifications,
+                                contentDescription = null,
+                                tint = Color.Blue
+                            )
+                        }
                         IconButton(onClick = { navController.navigate("friends") }) // creation de groupe
                         {
                             Icon(
