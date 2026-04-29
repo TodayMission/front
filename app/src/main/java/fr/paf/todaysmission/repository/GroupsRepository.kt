@@ -37,14 +37,71 @@ class GroupsRepository @Inject constructor(
             .build()
 
         _client.newCall(request).execute()
-//        var result = clickHandler("groups/create", "\"name\": \"$name\"", {}, context)
 
     }
 
+    suspend fun inviteToGroup(userId: String, groupId: String) = withContext(Dispatchers.IO){
+        val json = """{ "user": "$userId", "groupId" : "$groupId" }"""
+
+        val body = json.toRequestBody("application/json".toMediaType())
+
+        val request = Request.Builder()
+            .url("$_baseUrl/groups/send")
+            .addHeader("Authorization", "Bearer $_token")
+            .post(body)
+            .build()
+
+        _client.newCall(request).execute()
+    }
+
+    suspend fun acceptRequestToGroup(groupId: String) = withContext(Dispatchers.IO){
+        val json = """{ "groupId" : "$groupId" }"""
+
+        val body = json.toRequestBody("application/json".toMediaType())
+
+        val request = Request.Builder()
+            .url("$_baseUrl/groups/accept")
+            .addHeader("Authorization", "Bearer $_token")
+            .post(body)
+            .build()
+
+        _client.newCall(request).execute()
+    }
+
+    suspend fun denyRequestToGroup(groupId: String) = withContext(Dispatchers.IO){
+        val json = """{ "groupId" : "$groupId" }"""
+
+        val body = json.toRequestBody("application/json".toMediaType())
+
+        val request = Request.Builder()
+            .url("$_baseUrl/groups/deny")
+            .addHeader("Authorization", "Bearer $_token")
+            .post(body)
+            .build()
+
+        _client.newCall(request).execute()
+    }
+
     suspend fun getGroups(): Result<List<Group>> = withContext(Dispatchers.IO){
-        Log.d("MINE", "Le token est $_token")
         val request = Request.Builder()
             .url("$_baseUrl/me/groups")
+            .addHeader("Authorization", "Bearer $_token")
+            .build()
+
+        try {
+            val response = _client.newCall(request).execute()
+            val body = parseGroups(response.body!!.string()) ?: emptyList<Group>();
+            Result.success(body)
+        } catch(e: Exception) {
+            Result.failure(e)
+        }
+
+    }
+
+    suspend fun getPendingGroupsRequest(): Result<List<Group>> = withContext(Dispatchers.IO){
+        Log.d("MINE", "Le token est $_token")
+        val request = Request.Builder()
+            .url("$_baseUrl/me/groups_request")
             .addHeader("Authorization", "Bearer $_token")
             .build()
 

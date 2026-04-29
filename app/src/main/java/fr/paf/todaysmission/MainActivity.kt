@@ -41,8 +41,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 import fr.paf.todaysmission.views.GroupScreen
 import fr.paf.todaysmission.views.HomeScreen
+import fr.paf.todaysmission.views.InviteScreen
 import fr.paf.todaysmission.views.ListGroupScreen
-import fr.paf.todaysmission.views.LoginScreen
+import fr.paf.todaysmission.views.NotifyScreen
 import fr.paf.todaysmission.views.SettingsScreen
 
 @AndroidEntryPoint
@@ -84,6 +85,9 @@ class   MainActivity : ComponentActivity() {
             "group/{id}" -> {
                 bottomBarState.value = false
             }
+            "friends" -> {
+
+            }
         }
 
         Scaffold(
@@ -118,6 +122,12 @@ class   MainActivity : ComponentActivity() {
                     val id = entry.arguments?.getString("id") ?: "1"
                     Log.d("GROUP", id)
                     GroupScreen(id, navController)
+                }
+                composable("friends") { FriendScreen(navController) }
+                composable("notif") { NotifyScreen() }
+                composable("invite/{id}") { entry ->
+                    val id = entry.arguments?.getString("id") ?: "1"
+                    InviteScreen(id)
                 }
             }
         }
