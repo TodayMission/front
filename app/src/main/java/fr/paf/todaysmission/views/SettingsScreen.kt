@@ -1,5 +1,6 @@
 package fr.paf.todaysmission.views
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import fr.paf.todaysmission.utils.TokenManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType
@@ -35,14 +42,19 @@ fun SettingsScreen(){
 
 @Composable
 fun APITestButton(){
-    Button(onClick = {clickHandler("auth/login", "\"email\": \"caca@gmail.com\","+
-            "\"password\": \"caca\"", {})}) {
+    val context = LocalContext.current
+    Button(onClick = {clickHandler("auth/login", "\"email\": \"paul@gmail.com\","+
+            "\"password\": \"paul\"", {}, context)}) {
         Text("Test API")
     }
 }
-
-fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit){
-    Log.d("MINE", "Clicked $route")
+fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit, context: Context)
+{
+    Log.d("MINE", "pouroud")
+    token = runBlocking {
+        TokenManager.getToken(context) as String
+    }
+    Log.d("MINE", "Clicked")
     val JSON: MediaType = "application/json".toMediaType()
     val client: OkHttpClient = OkHttpClient()
 
@@ -87,6 +99,13 @@ fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit){
                     
                     Log.d("HTTP", "Token actuel: $token")
                     Log.d("HTTP", "UserId actuel: $userId")
+                if (token.isEmpty()) {
+                    token = parsedBody.getString("token")
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        TokenManager.saveToken(context, token)
+                    }
+                }
 
                     test(parsedBody)
                 } catch (e: Exception) {
