@@ -74,6 +74,9 @@ class   MainActivity : ComponentActivity() {
             "home" -> {
                 bottomBarState.value = true
             }
+            "login" -> {
+                bottomBarState.value = false
+            }
             "groups" -> {
                 bottomBarState.value = true
             }
@@ -93,10 +96,20 @@ class   MainActivity : ComponentActivity() {
         ) { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = "home",
+                startDestination = "login", // à changer pour spawn sur une autre page
                 modifier = Modifier.padding(paddingValues)
             ) {
-                composable("home") { HomeScreen(navController) }
+                composable("login") {
+                    LoginScreen(
+                        onSuccess = {
+                            navController.navigate("home") {
+                                popUpTo("login") { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+                composable("home") { HomeScreen() }
                 composable("groups") { ListGroupScreen(navController) }
                 composable("settings") { SettingsScreen() }
                 composable("group/{id}",
