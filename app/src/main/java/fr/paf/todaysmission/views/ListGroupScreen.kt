@@ -96,7 +96,6 @@ fun ListGroupScreen(navController: NavController, groupsViewModel: GroupsViewMod
                 State.SUCCESS -> {
                     LazyColumn(
                         modifier = Modifier
-                            .padding(innerPadding)
                             .padding(8.dp)
                     ) {
                         itemsIndexed(groups) { index, superGroup ->

@@ -21,8 +21,6 @@ import javax.inject.Inject
 class GroupsRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ){
-    private val _client = OkHttpClient()
-    private val _baseUrl = "http://192.168.1.81:3000"
     private val _token = runBlocking {
         TokenManager.getToken(context) as String
     }
