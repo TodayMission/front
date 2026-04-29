@@ -65,33 +65,29 @@ fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit, 
     val JSON: MediaType = "application/json".toMediaType()
     val client: OkHttpClient = OkHttpClient()
 
-    val json: String = "{" + args +
-        "}";
-
+    val json: String = if (args.isEmpty()) "{}" else "{$args}"
     val body: RequestBody = RequestBody.create(JSON, json)
 
     val request: Request = Request.Builder()
-        .url("$url:$port/" + route)
+        .url("$url:$port/$route")
         .post(body)
         .addHeader("Authorization", "Bearer $token")
         .build()
 
     client.newCall(request).enqueue(object : Callback {
-
         override fun onFailure(call: Call, e: IOException) {
             Log.e("HTTP", "Erreur réseau", e)
         }
 
         override fun onResponse(call: Call, response: Response) {
-
             response.use {
-                if (!it.isSuccessful) {
-                    Log.e("HTTP", "Code erreur : ${it.code}")
-                    return
-                }
+                val bodyStr = it.body?.string()
+                Log.d("HTTP", "Code: ${it.code}, Réponse brute : $bodyStr")
 
-                val body = it.body?.string() // ⚠️ lisible UNE seule fois
-                val parsedBody = JSONObject(body);
+                if (!it.isSuccessful) return
+
+                try {
+                    val parsedBody = JSONObject(bodyStr ?: "{}")
 
 //                if (token.isEmpty()) {
                     token = parsedBody.getString("token")
@@ -101,8 +97,10 @@ fun clickHandler(route: String, args: String, test: (json: JSONObject) -> Unit, 
                     }
 //                }
 
-                test(parsedBody)
-                Log.d("HTTP", "Réponse brute : ${parsedBody}")
+                    test(parsedBody)
+                } catch (e: Exception) {
+                    Log.e("HTTP", "Erreur parsing JSON", e)
+                }
             }
         }
     })
