@@ -32,14 +32,15 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import fr.paf.todaysmission.MainActivity.Companion.navController
 import fr.paf.todaysmission.models.Group
+import fr.paf.todaysmission.models.Users
 
 @Composable
-fun GroupCard(group: Group, onClick: NavController) {
+fun FriendCard(friend: Users, onDelete: (id: String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp, 8.dp),
-        onClick = { onClick.navigate("group/${group.id}") },
+        onClick = { onDelete(friend.id) },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -55,12 +56,6 @@ fun GroupCard(group: Group, onClick: NavController) {
                         .background(Color(0xFF4F46E5), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-//                    Text(
-//                        text = group.avatar,
-//                        color = Color.White,
-//                        fontSize = 24.sp,
-//                        fontWeight = FontWeight.SemiBold
-//                    )
                 }
 
                 Column(
@@ -74,7 +69,7 @@ fun GroupCard(group: Group, onClick: NavController) {
                         verticalAlignment = Alignment.Top
                     ) {
                         Text(
-                            text = group.name,
+                            text = friend.name,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -82,23 +77,12 @@ fun GroupCard(group: Group, onClick: NavController) {
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-//                            Text(
-//                                text = group.lastMessageTime,
-//                                fontSize = 14.sp,
-//                                color = Color.Gray
-//                            )
                             Box(
                                 modifier = Modifier
                                     .size(28.dp)
                                     .background(Color(0xFF4F46E5), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
-//                                Text(
-//                                    text = "${ group.unreadCount }",
-//                                    color = Color.White,
-//                                    fontSize = 14.sp,
-//                                    fontWeight = FontWeight.SemiBold
-//                                )
                             }
                         }
                     }
@@ -112,12 +96,6 @@ fun GroupCard(group: Group, onClick: NavController) {
                             tint = Color.Gray,
                             modifier = Modifier.size(16.dp)
                         )
-//                        Text(
-//                            text = group.lastMessage,
-//                            fontSize = 14.sp,
-//                            color = Color.Gray,
-//                            modifier = Modifier.padding(start = 8.dp)
-//                        )
                     }
                 }
             }

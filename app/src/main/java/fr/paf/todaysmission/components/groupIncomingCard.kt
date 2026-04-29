@@ -3,6 +3,7 @@ package fr.paf.todaysmission.components
 import android.content.Intent
 import android.net.http.SslCertificate.saveState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
@@ -25,7 +27,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -33,13 +37,18 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import fr.paf.todaysmission.MainActivity.Companion.navController
 import fr.paf.todaysmission.models.Group
 
+@Preview
 @Composable
-fun GroupCard(group: Group, onClick: NavController) {
+fun GroupCardPreview(){
+    GroupIncomingCard(Group("1", "MyGroup"), {}, {})
+}
+
+@Composable
+fun GroupIncomingCard(group: Group, onAccept: () -> Unit, onDeny: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp, 8.dp),
-        onClick = { onClick.navigate("group/${group.id}") },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -55,12 +64,6 @@ fun GroupCard(group: Group, onClick: NavController) {
                         .background(Color(0xFF4F46E5), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-//                    Text(
-//                        text = group.avatar,
-//                        color = Color.White,
-//                        fontSize = 24.sp,
-//                        fontWeight = FontWeight.SemiBold
-//                    )
                 }
 
                 Column(
@@ -82,23 +85,23 @@ fun GroupCard(group: Group, onClick: NavController) {
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-//                            Text(
-//                                text = group.lastMessageTime,
-//                                fontSize = 14.sp,
-//                                color = Color.Gray
-//                            )
                             Box(
                                 modifier = Modifier
                                     .size(28.dp)
-                                    .background(Color(0xFF4F46E5), CircleShape),
+                                    .background(Color.Green, CircleShape)
+                                    .clickable { onAccept() },
                                 contentAlignment = Alignment.Center
                             ) {
-//                                Text(
-//                                    text = "${ group.unreadCount }",
-//                                    color = Color.White,
-//                                    fontSize = 14.sp,
-//                                    fontWeight = FontWeight.SemiBold
-//                                )
+                                Icon(imageVector = Icons.Default.Check, contentDescription = "")
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .size(28.dp)
+                                    .background(Color.Red, CircleShape)
+                                    .clickable { onDeny() },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(imageVector = Icons.Default.Close, contentDescription = "")
                             }
                         }
                     }
@@ -112,12 +115,7 @@ fun GroupCard(group: Group, onClick: NavController) {
                             tint = Color.Gray,
                             modifier = Modifier.size(16.dp)
                         )
-//                        Text(
-//                            text = group.lastMessage,
-//                            fontSize = 14.sp,
-//                            color = Color.Gray,
-//                            modifier = Modifier.padding(start = 8.dp)
-//                        )
+
                     }
                 }
             }

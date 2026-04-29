@@ -37,12 +37,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
 import fr.paf.todaysmission.views.GroupScreen
 import fr.paf.todaysmission.views.HomeScreen
+import fr.paf.todaysmission.views.InviteScreen
 import fr.paf.todaysmission.views.ListGroupScreen
+import fr.paf.todaysmission.views.NotifyScreen
 import fr.paf.todaysmission.views.SettingsScreen
 import fr.paf.todaysmission.views.UploadScreen
 
+@AndroidEntryPoint
 class   MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +82,9 @@ class   MainActivity : ComponentActivity() {
             }
             "group/{id}" -> {
                 bottomBarState.value = false
+            }
+            "friends" -> {
+
             }
         }
 
@@ -113,6 +121,11 @@ class   MainActivity : ComponentActivity() {
                 ) { entry ->
                     val id = entry.arguments?.getString("id")
                     UploadScreen(id)
+                composable("friends") { FriendScreen(navController) }
+                composable("notif") { NotifyScreen() }
+                composable("invite/{id}") { entry ->
+                    val id = entry.arguments?.getString("id") ?: "1"
+                    InviteScreen(id)
                 }
             }
         }
