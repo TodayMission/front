@@ -29,7 +29,7 @@ import org.json.JSONObject
 import java.io.IOException
 
 var token: String = "";
-var url: String = "http://192.168.1.14"
+var url: String = "http://10.0.2.2"
 var port: String = "3000"
 
 @Composable
