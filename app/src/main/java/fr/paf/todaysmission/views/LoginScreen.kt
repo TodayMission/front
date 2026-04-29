@@ -1,4 +1,8 @@
 package fr.paf.todaysmission.views
 
-class LoginScreen {
-}
+import androidx.compose.runtime.Composable
+
+//@Composable
+//fun FriendScreen() {
+//
+//}
