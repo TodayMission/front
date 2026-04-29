@@ -5,8 +5,6 @@ import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.paf.todaysmission.models.Group
 import fr.paf.todaysmission.utils.TokenManager
-import fr.paf.todaysmission.views.clickHandler
-import fr.paf.todaysmission.views.token
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext

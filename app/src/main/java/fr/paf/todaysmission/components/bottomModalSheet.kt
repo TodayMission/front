@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.paf.todaysmission.models.Group
 //import fr.paf.todaysmission.models.superGroups
-import fr.paf.todaysmission.views.clickHandler
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

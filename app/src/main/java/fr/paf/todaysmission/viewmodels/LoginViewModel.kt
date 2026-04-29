@@ -8,6 +8,7 @@ import fr.paf.todaysmission.repository.AuthSession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import fr.paf.todaysmission.utils.State
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(private val loginRepository: AuthRepository) : ViewModel() {
