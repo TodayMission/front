@@ -67,9 +67,10 @@ class ChallengesRepository @Inject constructor(
             .build()
 
         try {
+            //execute request
             val response = _client.newCall(request).execute()
             val bodyString = response.body?.string().orEmpty()
-
+            //stop and return error to wiewmodel
             if (!response.isSuccessful) {
                 return@withContext Result.failure(Exception(bodyString))
             }
