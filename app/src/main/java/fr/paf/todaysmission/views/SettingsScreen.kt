@@ -49,9 +49,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import fr.paf.todaysmission.viewmodels.FriendsViewModel
-import fr.paf.todaysmission.viewmodels.State
+import fr.paf.todaysmission.viewmodels.FriendViewModels
+import fr.paf.todaysmission.utils.State
 
+var token: String = "";
+var url: String = "http://10.0.2.2"
+var port: String = "3000"
 private val avatarColors = listOf(
     Color(0xFF4CAF50),
     Color(0xFF2196F3),
@@ -64,7 +67,7 @@ private val avatarColors = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(friendsViewModel: FriendsViewModel = hiltViewModel()) {
+fun SettingsScreen(friendsViewModel: FriendViewModels = hiltViewModel()) {
     var selectedTab by remember { mutableStateOf(0) }
     val friends by friendsViewModel.friends.collectAsState()
     val friendsState by friendsViewModel.state.collectAsState()

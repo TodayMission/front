@@ -43,6 +43,7 @@ import fr.paf.todaysmission.views.GroupScreen
 import fr.paf.todaysmission.views.HomeScreen
 import fr.paf.todaysmission.views.InviteScreen
 import fr.paf.todaysmission.views.ListGroupScreen
+import fr.paf.todaysmission.views.LoginScreen
 import fr.paf.todaysmission.views.NotifyScreen
 import fr.paf.todaysmission.views.SettingsScreen
 import fr.paf.todaysmission.views.UploadScreen
@@ -74,18 +75,23 @@ class   MainActivity : ComponentActivity() {
             "home" -> {
                 bottomBarState.value = true
             }
+
             "login" -> {
                 bottomBarState.value = false
             }
+
             "groups" -> {
                 bottomBarState.value = true
             }
+
             "settings" -> {
                 bottomBarState.value = true
             }
+
             "group/{id}" -> {
                 bottomBarState.value = false
             }
+
             "friends" -> {
 
             }
@@ -109,15 +115,16 @@ class   MainActivity : ComponentActivity() {
                         }
                     )
                 }
-                composable("home") { HomeScreen() }
+                composable("home") { HomeScreen(navController) }
                 composable("groups") { ListGroupScreen(navController) }
                 composable("settings") { SettingsScreen() }
-                composable("group/{id}",
+                composable(
+                    "group/{id}",
                     arguments = listOf(
                         navArgument("id") {
                             type = NavType.StringType
                             nullable = false
-                        } ,
+                        },
                     ))
                 { entry ->
                     val id = entry.arguments?.getString("id") ?: "1"
@@ -134,42 +141,43 @@ class   MainActivity : ComponentActivity() {
                 ) { entry ->
                     val id = entry.arguments?.getString("id")
                     UploadScreen(id)
-                composable("friends") { FriendScreen(navController) }
-                composable("notif") { NotifyScreen() }
-                composable("invite/{id}") { entry ->
-                    val id = entry.arguments?.getString("id") ?: "1"
-                    InviteScreen(id)
+                }
+                    composable("friends") { FriendScreen(navController) }
+                    composable("notif") { NotifyScreen() }
+                    composable("invite/{id}") { entry ->
+                        val id = entry.arguments?.getString("id") ?: "1"
+                        InviteScreen(id)
+                    }
+                }
+            }
+        }
+
+        @Composable
+        fun BottomNavBar(navController: NavController, bottomBarState: MutableState<Boolean>) {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+
+            AnimatedVisibility(visible = bottomBarState.value,) {
+                NavigationBar(containerColor = Color.White) {
+                    NavigationBarItem(
+                        selected = currentRoute == "home",
+                        onClick = { navController.navigate("home") },
+                        icon = { Icon(Icons.Default.Home, "Home") },
+                        label = { Text("Home") }
+                    )
+                    NavigationBarItem(
+                        selected = currentRoute == "groups",
+                        onClick = { navController.navigate("groups") },
+                        icon = { Icon(Icons.Default.Search, "Group") },
+                        label = { Text("Group") }
+                    )
+                    NavigationBarItem(
+                        selected = currentRoute == "settings",
+                        onClick = { navController.navigate("settings") },
+                        icon = { Icon(Icons.Default.Person, "Settings") },
+                        label = { Text("Settings") }
+                    )
                 }
             }
         }
     }
-
-    @Composable
-    fun BottomNavBar(navController: NavController, bottomBarState: MutableState<Boolean>) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-
-        AnimatedVisibility(visible = bottomBarState.value,) {
-            NavigationBar(containerColor = Color.White) {
-                NavigationBarItem(
-                    selected = currentRoute == "home",
-                    onClick = { navController.navigate("home") },
-                    icon = { Icon(Icons.Default.Home, "Home") },
-                    label = { Text("Home") }
-                )
-                NavigationBarItem(
-                    selected = currentRoute == "groups",
-                    onClick = { navController.navigate("groups") },
-                    icon = { Icon(Icons.Default.Search, "Group") },
-                    label = { Text("Group") }
-                )
-                NavigationBarItem(
-                    selected = currentRoute == "settings",
-                    onClick = { navController.navigate("settings") },
-                    icon = { Icon(Icons.Default.Person, "Settings") },
-                    label = { Text("Settings") }
-                )
-            }
-        }
-    }
-}

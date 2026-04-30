@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import fr.paf.todaysmission.viewmodels.LoginViewModel
-import fr.paf.todaysmission.viewmodels.State
+import fr.paf.todaysmission.utils.State
 
 @Composable
 fun LoginScreen(
