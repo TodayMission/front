@@ -98,6 +98,7 @@ class FriendViewModels @Inject constructor(private val friendsRepository: Friend
             friendsRepository.deleteFriend(userId)
 
             getAnyFriends()
+            getFriends()
         }
     }
 
