@@ -68,26 +68,18 @@ fun GroupScreen(
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     val joinMessage by challengesViewModel.message.collectAsState()
-    val createdChallenge by challengesViewModel.createdChallenge.collectAsState()
+    val challenges by challengesViewModel.challenges.collectAsState()
 
     var messages by remember { mutableStateOf(msg_test) }
+
+    LaunchedEffect(id) {
+        challengesViewModel.getGroupChallenges(id)
+    }
 
     LaunchedEffect(joinMessage) {
         joinMessage?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             challengesViewModel.clearMessage()
-        }
-    }
-
-    LaunchedEffect(createdChallenge) {
-        createdChallenge?.let {
-            messages = messages + Messages(
-                id = it.challengeId ?: (messages.size + 1).toString(),
-                nom = "SYSTEME",
-                msg = "Challenge crée ${it.name}",
-                group_id = id
-            )
-            challengesViewModel.clearCreatedChallenge()
         }
     }
     Scaffold(
@@ -124,14 +116,32 @@ fun GroupScreen(
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize().background(Color.White)) {
             LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 10.dp)) {
+                itemsIndexed(challenges) { _, challenge ->
+                    MessageCard(
+                        Messages(
+                            id = challenge.id,
+                            nom = "SYSTEME",
+                            msg = "Challenge ${challenge.name}",
+                            group_id = id
+                        )
+                    )
+
+                    if (challenge.isJoined) {
+                        Text(
+                            text = "Vous avez rejoint le challenge",
+                            color = Color(0xFF4CAF50),
+                            modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
+                        )
+                    } else {
+                        JoinChallengeButton {
+                            challengesViewModel.joinChallenge(challenge.id, id)
+                        }
+                    }
+                }
+
                 itemsIndexed(messages) { _, msg ->
                     if (id == msg.group_id) {
                         MessageCard(msg)
-                        if (msg.nom == "SYSTEME") {
-                            JoinChallengeButton {
-                                challengesViewModel.joinChallenge(msg.id)
-                            }
-                        }
                     }
                 }
             }

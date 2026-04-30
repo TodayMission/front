@@ -53,6 +53,9 @@ import fr.paf.todaysmission.viewmodels.FriendViewModels
 import fr.paf.todaysmission.utils.State
 import fr.paf.todaysmission.viewmodels.LoginViewModel
 
+var token: String = "";
+var url: String = "http://10.0.2.2"
+var port: String = "3000"
 private val avatarColors = listOf(
     Color(0xFF4CAF50),
     Color(0xFF2196F3),
