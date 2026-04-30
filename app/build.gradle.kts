@@ -46,6 +46,8 @@ android {
 }
 
 dependencies {
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.57.1")
+    implementation("com.auth0.android:jwtdecode:2.0.2")
     implementation("com.google.dagger:hilt-android:2.51.1")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")

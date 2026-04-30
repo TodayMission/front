@@ -83,8 +83,6 @@ fun HomeScreen(
                 )
             }
             State.SUCCESS -> {
-//                val challengesPendings = challenges.filter { it.status == "En Cours" }
-//                val challengesFinish = challenges.filter { it.status != "En Cours" }
 
                 LazyColumn(modifier = Modifier.padding(innerPadding).padding(8.dp)) {
                     if (challenges.isNotEmpty()) {
@@ -103,36 +101,6 @@ fun HomeScreen(
                             }
                         }
                     }
-
-//                    if (challengesFinish.isNotEmpty()) {
-//                        item {
-//                            Text(
-//                                "Défis Terminés",
-//                                style = MaterialTheme.typography.titleMedium,
-//                                fontWeight = FontWeight.Bold,
-//                                fontSize = 16.sp,
-//                                modifier = Modifier.padding(12.dp, 8.dp)
-//                            )
-//                        }
-//                        itemsIndexed(challengesFinish) { _, challenge ->
-//                            ChallengeCard(challenge) {
-//                                navController.navigate("upload/${challenge.id}")
-//                            }
-//                        }
-//                    }
-
-//                    if (challengesPendings.isEmpty() && challengesFinish.isEmpty()) {
-//                        item {
-//                            Box(
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .padding(32.dp),
-//                                contentAlignment = Alignment.Center
-//                            ) {
-//                                Text("Aucun défi pour le moment.", color = Color.Gray)
-//                            }
-//                        }
-//                    }
                 }
             }
         }

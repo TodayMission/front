@@ -14,7 +14,6 @@ import javax.inject.Inject
 
 data class AuthSession(
     val token: String,
-    val userId: String,
 )
 
 class AuthRepository @Inject constructor(
@@ -45,20 +44,10 @@ class AuthRepository @Inject constructor(
                 parsed.optString("token")
                     .ifBlank { parsed.optString("accessToken") }
                     .ifBlank { parsed.optString("access_token") }
-            var userId = parsed.optString("userId")
-                .ifBlank {
-                    runCatching {
-                        parsed.getJSONArray("response")
-                            .getJSONArray(0)
-                            .getJSONObject(0)
-                            .optString("id")
-                    }.getOrDefault("")
-                }
+
 
             TokenManager.saveToken(context, token)
-            TokenManager.saveUserId(context, userId)
-            
-            Result.success(AuthSession(token = token, userId = userId))
+            Result.success(AuthSession(token = token))
         } catch (e: Exception) {
             Result.failure(e)
         }

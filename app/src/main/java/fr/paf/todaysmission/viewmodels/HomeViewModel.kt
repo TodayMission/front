@@ -1,6 +1,7 @@
 package fr.paf.todaysmission.viewmodels
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,8 +31,9 @@ class HomeViewModel @Inject constructor(
 
     fun loadChallenges() {
         viewModelScope.launch {
-            val userId = TokenManager.getUserId(appContext).orEmpty()
-            if (userId.isBlank()) {
+            val token = TokenManager.getToken(appContext)
+            val userId = if (token != null) TokenManager.getUserIdFromToken(token) else null
+            if (userId.isNullOrBlank()) {
                 _state.value = State.ERROR
                 return@launch
             }

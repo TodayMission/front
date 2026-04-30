@@ -9,9 +9,5 @@ import java.util.Date
 data class Challenge (
     val id: String,
     val name: String,
-//    val description: String,
     val status: String,
-//    val created_at: Date,
-//    val isFinished: Date,
-//    val group_id: Int
 ): Parcelable
