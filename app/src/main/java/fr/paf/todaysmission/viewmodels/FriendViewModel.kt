@@ -42,13 +42,13 @@ class FriendViewModels @Inject constructor(private val friendsRepository: Friend
 
     fun getIncomingFriends() {
         viewModelScope.launch {
-            state.value = State.LOADING
+//            state.value = State.LOADING
 
             val results = friendsRepository.getIncomingFriends()
 
             results.onSuccess {
                 _friends_incoming.value = it
-                state.value = State.SUCCESS
+//                state.value = State.SUCCESS
             }.onFailure {
                 state.value = State.ERROR
                 error.emit("Serveur timeout")
@@ -74,16 +74,13 @@ class FriendViewModels @Inject constructor(private val friendsRepository: Friend
 
     fun getPendingFriends() {
         viewModelScope.launch {
-            state.value = State.LOADING
-            Log.d("MINE", "test")
+//            state.value = State.LOADING
             val results = friendsRepository.getPendingFriends()
 
             results.onSuccess {
-                Log.d("MINE", it.toString())
                 _friends_pending.value = it
-                state.value = State.SUCCESS
+//                state.value = State.SUCCESS
             }.onFailure {
-                Log.d("MINE", it.toString())
                 state.value = State.ERROR
                 error.emit("Serveur timeout")
             }
