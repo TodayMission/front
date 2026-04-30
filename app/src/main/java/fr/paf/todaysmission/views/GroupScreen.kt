@@ -73,6 +73,7 @@ fun GroupScreen(
     var messages by remember { mutableStateOf(msg_test) }
 
     LaunchedEffect(id) {
+        //get challenge of groups
         challengesViewModel.getGroupChallenges(id)
     }
 
@@ -161,6 +162,7 @@ fun GroupScreen(
         if (showBottomSheet) {
             BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, true, { nameValue ->
                 showBottomSheet = false
+                //create challenge with wiewmodel
                 challengesViewModel.createChallenge(nameValue, id)
                 scope.launch {
                     sheetState.hide()

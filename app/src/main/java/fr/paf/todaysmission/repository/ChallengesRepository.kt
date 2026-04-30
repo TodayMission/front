@@ -56,9 +56,10 @@ class ChallengesRepository @Inject constructor(
 
     suspend fun createChallenge(name: String, groupId: String): Result<String> = withContext(Dispatchers.IO) {
         val token = TokenManager.getToken(context).orEmpty()
+        //get name and groupid from view
         val json = """{ "name": "$name", "groupId": "$groupId" }"""
         val body = json.toRequestBody("application/json".toMediaType())
-
+        //post to  back with token
         val request = Request.Builder()
             .url("$_baseUrl/challenges/create")
             .addHeader("Authorization", "Bearer $token")
