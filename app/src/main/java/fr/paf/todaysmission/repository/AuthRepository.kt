@@ -20,7 +20,7 @@ data class AuthSession(
 class AuthRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ){
-    suspend fun login(username: String, password: String): Result<AuthSession> = withContext(Dispatchers.IO){
+    suspend fun login(username: String, password: String): Result<AuthSession?> = withContext(Dispatchers.IO){
         // Tolérant : certaines APIs attendent "email", d'autres "user"
         val json = """{ "email": "$username", "user": "$username", "password": "$password" }"""
 
@@ -38,6 +38,10 @@ class AuthRepository @Inject constructor(
             if (!response.isSuccessful) {
                 Log.e("AUTH", "Login failed: ${response.code} $bodyStr")
                 return@withContext Result.failure(IllegalStateException("Login failed (${response.code})"))
+            }
+
+            if(response.code == 400) {
+                return@withContext Result.success(null)
             }
 
             val parsed = JSONObject(bodyStr.ifBlank { "{}" })
