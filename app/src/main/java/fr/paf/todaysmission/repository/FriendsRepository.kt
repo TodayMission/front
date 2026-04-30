@@ -93,8 +93,12 @@ class FriendRepository @Inject constructor(
             .delete(body)
             .build()
 
-        _client.newCall(request).execute()
-    }
+        try{
+            _client.newCall(request).execute()
+            return@withContext Result.success("")
+        } catch (e: Exception) {
+            return@withContext Result.failure(e)
+        }    }
 
     suspend fun getIncomingFriends(): Result<List<Users>> = withContext(Dispatchers.IO){
         val request = Request.Builder()

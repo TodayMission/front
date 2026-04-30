@@ -32,6 +32,10 @@ class LoginViewModel @Inject constructor(private val loginRepository: AuthReposi
             _error.value = null
             loginRepository.login(username, password)
                 .onSuccess {
+                    if(it == null){
+                        _state.value = State.ERROR
+                        _error.value = "Wrong credentials"
+                    }
                     _session.value = it
                     _state.value = State.SUCCESS
                 }

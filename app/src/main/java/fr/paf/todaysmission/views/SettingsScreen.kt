@@ -53,7 +53,7 @@ import fr.paf.todaysmission.viewmodels.FriendViewModels
 import fr.paf.todaysmission.utils.State
 
 var token: String = "";
-var url: String = "http://10.0.2.2"
+var url: String = "http://10.57.32.5"
 var port: String = "3000"
 private val avatarColors = listOf(
     Color(0xFF4CAF50),
