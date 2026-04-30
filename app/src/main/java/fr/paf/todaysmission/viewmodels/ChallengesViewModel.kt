@@ -39,6 +39,7 @@ class ChallengesViewModel @Inject constructor(
 
             result.onSuccess {
                 _message.value = it
+                //reload list of challenge to get new challenge
                 getGroupChallenges(groupId)
             }.onFailure {
                 _message.value = it.message ?: "Erreur lors de la creation du challenge"
