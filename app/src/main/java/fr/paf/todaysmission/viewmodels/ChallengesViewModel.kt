@@ -35,6 +35,7 @@ class ChallengesViewModel @Inject constructor(
 
     fun createChallenge(name: String, groupId: String) {
         viewModelScope.launch {
+            //create challenge with repository
             val result = challengesRepository.createChallenge(name, groupId)
 
             result.onSuccess {
