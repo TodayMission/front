@@ -50,6 +50,8 @@ class AuthRepository @Inject constructor(
                     .ifBlank { parsed.optJSONObject("user")?.optString("id").orEmpty() }
 
             TokenManager.saveToken(context, token)
+            TokenManager.saveUserId(context, userId)
+            
             Result.success(AuthSession(token = token, userId = userId))
         } catch (e: Exception) {
             Result.failure(e)

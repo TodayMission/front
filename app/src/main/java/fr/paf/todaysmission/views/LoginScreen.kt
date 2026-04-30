@@ -93,7 +93,6 @@ fun LoginScreen(
             onClick = {
                 loginViewModel.login(mail, password)
             },
-            enabled = canSubmit,
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("loginButton"),
