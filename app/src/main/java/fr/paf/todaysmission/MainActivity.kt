@@ -41,8 +41,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 import fr.paf.todaysmission.views.GroupScreen
 import fr.paf.todaysmission.views.HomeScreen
+import fr.paf.todaysmission.views.InviteScreen
 import fr.paf.todaysmission.views.ListGroupScreen
+import fr.paf.todaysmission.views.LoginScreen
+import fr.paf.todaysmission.views.NotifyScreen
 import fr.paf.todaysmission.views.SettingsScreen
+import fr.paf.todaysmission.views.UploadScreen
 
 @AndroidEntryPoint
 class   MainActivity : ComponentActivity() {
@@ -71,15 +75,23 @@ class   MainActivity : ComponentActivity() {
             "home" -> {
                 bottomBarState.value = true
             }
+
+            "login" -> {
+                bottomBarState.value = false
+            }
+
             "groups" -> {
                 bottomBarState.value = true
             }
+
             "settings" -> {
                 bottomBarState.value = true
             }
+
             "group/{id}" -> {
                 bottomBarState.value = false
             }
+
             "friends" -> {
 
             }
@@ -90,55 +102,82 @@ class   MainActivity : ComponentActivity() {
         ) { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = "home",
+                startDestination = "login", // à changer pour spawn sur une autre page
                 modifier = Modifier.padding(paddingValues)
             ) {
-                composable("home") { HomeScreen() }
+                composable("login") {
+                    LoginScreen(
+                        onSuccess = {
+                            navController.navigate("home") {
+                                popUpTo("login") { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+                composable("home") { HomeScreen(navController) }
                 composable("groups") { ListGroupScreen(navController) }
                 composable("settings") { SettingsScreen() }
-                composable("group/{id}",
+                composable(
+                    "group/{id}",
                     arguments = listOf(
                         navArgument("id") {
                             type = NavType.StringType
                             nullable = false
-                        } ,
+                        },
                     ))
                 { entry ->
                     val id = entry.arguments?.getString("id") ?: "1"
                     Log.d("GROUP", id)
                     GroupScreen(id, navController)
                 }
-                composable("friends") { FriendScreen(navController) }
+                composable(
+                    route = "upload/{id}",
+                    arguments = listOf(
+                        navArgument("id") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { entry ->
+                    val id = entry.arguments?.getString("id")
+                    UploadScreen(id)
+                }
+                    composable("friends") { FriendScreen(navController) }
+                    composable("notif") { NotifyScreen() }
+                    composable("invite/{id}") { entry ->
+                        val id = entry.arguments?.getString("id") ?: "1"
+                        InviteScreen(id)
+                    }
+                }
+            }
+        }
+
+        @Composable
+        fun BottomNavBar(navController: NavController, bottomBarState: MutableState<Boolean>) {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+
+            AnimatedVisibility(visible = bottomBarState.value,) {
+                NavigationBar(containerColor = Color.White) {
+                    NavigationBarItem(
+                        selected = currentRoute == "home",
+                        onClick = { navController.navigate("home") },
+                        icon = { Icon(Icons.Default.Home, "Home") },
+                        label = { Text("Home") }
+                    )
+                    NavigationBarItem(
+                        selected = currentRoute == "groups",
+                        onClick = { navController.navigate("groups") },
+                        icon = { Icon(Icons.Default.Search, "Group") },
+                        label = { Text("Group") }
+                    )
+                    NavigationBarItem(
+                        selected = currentRoute == "settings",
+                        onClick = { navController.navigate("settings") },
+                        icon = { Icon(Icons.Default.Person, "Settings") },
+                        label = { Text("Settings") }
+                    )
+                }
             }
         }
     }
-
-    @Composable
-    fun BottomNavBar(navController: NavController, bottomBarState: MutableState<Boolean>) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-
-        AnimatedVisibility(visible = bottomBarState.value,) {
-            NavigationBar(containerColor = Color.White) {
-                NavigationBarItem(
-                    selected = currentRoute == "home",
-                    onClick = { navController.navigate("home") },
-                    icon = { Icon(Icons.Default.Home, "Home") },
-                    label = { Text("Home") }
-                )
-                NavigationBarItem(
-                    selected = currentRoute == "groups",
-                    onClick = { navController.navigate("groups") },
-                    icon = { Icon(Icons.Default.Search, "Group") },
-                    label = { Text("Group") }
-                )
-                NavigationBarItem(
-                    selected = currentRoute == "settings",
-                    onClick = { navController.navigate("settings") },
-                    icon = { Icon(Icons.Default.Person, "Settings") },
-                    label = { Text("Settings") }
-                )
-            }
-        }
-    }
-}
