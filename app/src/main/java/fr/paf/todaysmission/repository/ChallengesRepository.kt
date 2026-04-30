@@ -2,12 +2,14 @@ package fr.paf.todaysmission.repository
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import fr.paf.todaysmission.models.Challenge
 import fr.paf.todaysmission.utils.TokenManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
 import org.json.JSONObject
 import javax.inject.Inject
 
@@ -74,5 +76,45 @@ class ChallengesRepository @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    suspend fun getChallengesUser(userId: String): Result<List<Challenge>> = withContext(Dispatchers.IO) {
+        val token = TokenManager.getToken(context).orEmpty()
+        val request = Request.Builder()
+            .url("$_baseUrl/challenges/user/$userId")
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        try {
+            val response = _client.newCall(request).execute()
+            val bodyString = response.body?.string().orEmpty()
+
+            if (!response.isSuccessful) {
+                return@withContext Result.failure(Exception(bodyString))
+            }
+
+            Result.success(parseChallenges(bodyString))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    private fun parseChallenges(json: String): List<Challenge> {
+        val list = mutableListOf<Challenge>()
+        val array = JSONArray(json)
+
+        for (i in 0 until array.length()) {
+            val obj = array.getJSONObject(i)
+
+            list.add(
+                Challenge(
+                    id = obj.optString("id"),
+                    name = obj.optString("name"),
+                    status = obj.optString("is_finished")
+                )
+            )
+        }
+
+        return list
     }
 }
