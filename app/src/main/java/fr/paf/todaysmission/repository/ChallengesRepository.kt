@@ -8,18 +8,53 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
+import org.json.JSONArray
 import javax.inject.Inject
 
-data class CreatedChallenge(
+data class GroupChallenge(
+    val id: String,
     val name: String,
-    val challengeId: String?
+    val isJoined: Boolean
 )
 
 class ChallengesRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    suspend fun createChallenge(name: String, groupId: String): Result<CreatedChallenge> = withContext(Dispatchers.IO) {
+    suspend fun getGroupChallenges(groupId: String): Result<List<GroupChallenge>> = withContext(Dispatchers.IO) {
+        val token = TokenManager.getToken(context).orEmpty()
+
+        val request = Request.Builder()
+            .url("$_baseUrl/challenges?groupId=$groupId")
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        try {
+            val response = _client.newCall(request).execute()
+            val bodyString = response.body?.string().orEmpty()
+
+            if (!response.isSuccessful) {
+                return@withContext Result.failure(Exception(bodyString))
+            }
+
+            val array = JSONArray(bodyString)
+            val challenges = mutableListOf<GroupChallenge>()
+
+            for (i in 0 until array.length()) {
+                val item = array.getJSONObject(i)
+                challenges.add(GroupChallenge(
+                    id = item.optString("id"),
+                    name = item.optString("name"),
+                    isJoined = item.optBoolean("isJoined")
+                ))
+            }
+
+            Result.success(challenges)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun createChallenge(name: String, groupId: String): Result<String> = withContext(Dispatchers.IO) {
         val token = TokenManager.getToken(context).orEmpty()
         val json = """{ "name": "$name", "groupId": "$groupId" }"""
         val body = json.toRequestBody("application/json".toMediaType())
@@ -38,19 +73,13 @@ class ChallengesRepository @Inject constructor(
                 return@withContext Result.failure(Exception(bodyString))
             }
 
-            val jsonBody = JSONObject(bodyString)
-            Result.success(
-                CreatedChallenge(
-                    name = jsonBody.optString("message", name),
-                    challengeId = jsonBody.optString("challengeId").takeIf { it.isNotBlank() }
-                )
-            )
+            Result.success("Challenge cree")
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun joinChallenge(challengeId: String): Result<String> = withContext(Dispatchers.IO) {
+    suspend fun joinChallenge(challengeId: String): Result<Unit> = withContext(Dispatchers.IO) {
         val token = TokenManager.getToken(context).orEmpty()
         val json = """{ "challengeId": "$challengeId" }"""
         val body = json.toRequestBody("application/json".toMediaType())
@@ -69,8 +98,7 @@ class ChallengesRepository @Inject constructor(
                 return@withContext Result.failure(Exception(bodyString))
             }
 
-            val message = JSONObject(bodyString).optString("message", "Challenge rejoint")
-            Result.success(message)
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
