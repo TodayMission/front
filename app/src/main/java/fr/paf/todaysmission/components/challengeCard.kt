@@ -47,12 +47,6 @@ fun ChallengeCard(challenge: Challenge, onClick: () -> Unit) {
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
-                        text = challenge.description,
-                        fontSize = 16.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
                 }
                 Surface(
                     shape = RoundedCornerShape(20.dp),

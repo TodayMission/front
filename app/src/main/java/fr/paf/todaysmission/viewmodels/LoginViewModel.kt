@@ -22,9 +22,9 @@ class LoginViewModel @Inject constructor(private val loginRepository: AuthReposi
     private val _session = MutableStateFlow<AuthSession?>(null)
     val session = _session
 
-    init {
-        _state.value = State.SUCCESS
-    }
+//    init {
+//        _state.value = State.SUCCESS
+//    }
 
     fun login(username: String, password: String) {
         viewModelScope.launch {
