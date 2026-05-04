@@ -11,9 +11,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Group
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -102,7 +107,7 @@ class   MainActivity : ComponentActivity() {
         ) { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = "login", // à changer pour spawn sur une autre page
+                startDestination = "home", // à changer pour spawn sur une autre page
                 modifier = Modifier.padding(paddingValues)
             ) {
                 composable("login") {
@@ -143,7 +148,7 @@ class   MainActivity : ComponentActivity() {
                     UploadScreen(id)
                 }
                     composable("friends") { FriendScreen(navController) }
-                    composable("notif") { NotifyScreen() }
+                    composable("notif") { NotifyScreen(navController) }
                     composable("invite/{id}") { entry ->
                         val id = entry.arguments?.getString("id") ?: "1"
                         InviteScreen(id)
@@ -162,19 +167,19 @@ class   MainActivity : ComponentActivity() {
                     NavigationBarItem(
                         selected = currentRoute == "home",
                         onClick = { navController.navigate("home") },
-                        icon = { Icon(Icons.Default.Home, "Home") },
+                        icon = { Icon(Icons.Outlined.Home, "Home") },
                         label = { Text("Home") }
                     )
                     NavigationBarItem(
                         selected = currentRoute == "groups",
                         onClick = { navController.navigate("groups") },
-                        icon = { Icon(Icons.Default.Search, "Group") },
+                        icon = { Icon(Icons.Outlined.Group, "Group") },
                         label = { Text("Group") }
                     )
                     NavigationBarItem(
                         selected = currentRoute == "settings",
                         onClick = { navController.navigate("settings") },
-                        icon = { Icon(Icons.Default.Person, "Settings") },
+                        icon = { Icon(Icons.Outlined.Settings, "Settings") },
                         label = { Text("Settings") }
                     )
                 }
