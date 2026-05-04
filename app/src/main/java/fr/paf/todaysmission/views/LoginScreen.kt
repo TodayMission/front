@@ -44,7 +44,6 @@ fun LoginScreen(
     val state by loginViewModel.state.collectAsState()
     val error by loginViewModel.error.collectAsState()
     val session by loginViewModel.session.collectAsState()
-    val canSubmit = mail.isNotBlank() && password.isNotBlank() && state != State.LOADING
 
     LaunchedEffect(session) {
         if (session != null) {
@@ -93,7 +92,6 @@ fun LoginScreen(
             onClick = {
                 loginViewModel.login(mail, password)
             },
-            enabled = canSubmit,
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("loginButton"),

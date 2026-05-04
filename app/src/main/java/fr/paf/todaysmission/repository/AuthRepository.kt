@@ -14,13 +14,12 @@ import javax.inject.Inject
 
 data class AuthSession(
     val token: String,
-    val userId: String,
 )
 
 class AuthRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ){
-    suspend fun login(username: String, password: String): Result<AuthSession> = withContext(Dispatchers.IO){
+    suspend fun login(username: String, password: String): Result<AuthSession?> = withContext(Dispatchers.IO){
         // Tolérant : certaines APIs attendent "email", d'autres "user"
         val json = """{ "email": "$username", "user": "$username", "password": "$password" }"""
 
@@ -40,23 +39,23 @@ class AuthRepository @Inject constructor(
                 return@withContext Result.failure(IllegalStateException("Login failed (${response.code})"))
             }
 
+            if(response.code == 400) {
+                return@withContext Result.success(null)
+            }
+
             val parsed = JSONObject(bodyStr.ifBlank { "{}" })
             val token =
                 parsed.optString("token")
                     .ifBlank { parsed.optString("accessToken") }
                     .ifBlank { parsed.optString("access_token") }
-            val userId = parsed.optString("userId")
-                    .ifBlank { parsed.optString("id") }
-                    .ifBlank { parsed.optJSONObject("user")?.optString("id").orEmpty() }
+
 
             TokenManager.saveToken(context, token)
-            Result.success(AuthSession(token = token, userId = userId))
+            Result.success(AuthSession(token = token))
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
     // register
-
-
 }

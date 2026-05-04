@@ -1,7 +1,6 @@
 package fr.paf.todaysmission.repository
 
 import android.content.Context
-import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.paf.todaysmission.models.Users
 import fr.paf.todaysmission.utils.TokenManager
@@ -93,8 +92,12 @@ class FriendRepository @Inject constructor(
             .delete(body)
             .build()
 
-        _client.newCall(request).execute()
-    }
+        try{
+            _client.newCall(request).execute()
+            return@withContext Result.success("")
+        } catch (e: Exception) {
+            return@withContext Result.failure(e)
+        }    }
 
     suspend fun getIncomingFriends(): Result<List<Users>> = withContext(Dispatchers.IO){
         val request = Request.Builder()
