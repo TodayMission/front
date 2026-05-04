@@ -30,6 +30,8 @@ class AuthRepository @Inject constructor(
             .post(body)
             .build()
 
+        Log.d("MINE", request.url.toString())
+
         try {
             val response = _client.newCall(request).execute()
             val bodyStr = response.body?.string().orEmpty()
