@@ -1,5 +1,6 @@
 package fr.paf.todaysmission.views
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,6 +54,7 @@ fun ListGroupScreen(navController: NavController, groupsViewModel: GroupsViewMod
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     val groups by groupsViewModel.groups.collectAsState()
+//    val users_groups by groupsViewModel.groups_users.collectAsState()
     val error by groupsViewModel.error.collectAsState()
     val state by groupsViewModel.state.collectAsState()
 
@@ -72,7 +74,7 @@ fun ListGroupScreen(navController: NavController, groupsViewModel: GroupsViewMod
                         titleContentColor = MaterialTheme.colorScheme.primary,
                     ),
                     title = {
-                        Text("My Groups", textAlign = TextAlign.Center)
+                        Text("Groups", textAlign = TextAlign.Center)
                     },
                     actions = {
                         IconButton(onClick = { navController.navigate("notif") }) // creation de groupe

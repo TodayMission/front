@@ -140,7 +140,9 @@ class ChallengesRepository @Inject constructor(
                 Challenge(
                     id = obj.optString("id"),
                     name = obj.optString("name"),
-                    status = obj.optString("is_finished")
+                    status = obj.optBoolean("is_completed"),
+                    member_count = obj.optString("member_count"),
+                    date_end = obj.optString("end_at")
                 )
             )
         }

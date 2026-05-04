@@ -50,11 +50,11 @@ fun ChallengeCard(challenge: Challenge, onClick: () -> Unit) {
                 }
                 Surface(
                     shape = RoundedCornerShape(20.dp),
-                    color = Color(0xFFD1FAE5)
+                    color = if (challenge.status) Color(0xFFD1FAE5) else Color(0xFFf1c40f)
                 ) {
                     Text(
-                        text = challenge.status,
-                        color = Color(0xFF059669),
+                        text = if (challenge.status) "Terminé" else "En cours",
+                        color = if (challenge.status) Color(0xFF059669) else Color(0xFFe67e22),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
@@ -72,23 +72,10 @@ fun ChallengeCard(challenge: Challenge, onClick: () -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray)
                     Text(
-                        text = "4",
+                        text = challenge.member_count,
                         fontSize = 18.sp,
                         color = Color.Gray,
                         modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = null,
-                        tint = Color(0xFF3B82F6)
-                    )
-                    Text(
-                        text = "2h 30m",
-                        fontSize = 16.sp,
-                        color = Color(0xFF3B82F6),
-                        modifier = Modifier.padding(start = 6.dp)
                     )
                 }
             }
