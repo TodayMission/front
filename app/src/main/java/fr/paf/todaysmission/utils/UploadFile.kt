@@ -2,6 +2,7 @@ package fr.paf.todaysmission.utils
 
 import android.content.Context
 import android.net.Uri
+import fr.paf.todaysmission.repository._baseUrl
 import kotlinx.coroutines.runBlocking
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -59,7 +60,7 @@ fun uploadFile(
 
 
     val request = Request.Builder()
-        .url("http://10.57.32.230:3000/challenges/$challengeId/upload")
+        .url("$_baseUrl/challenges/$challengeId/upload")
         .addHeader("Authorization", "Bearer $_token")
         .post(multipartBody)
         .build()
