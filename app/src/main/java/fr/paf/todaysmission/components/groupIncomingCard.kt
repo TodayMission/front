@@ -37,11 +37,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import fr.paf.todaysmission.MainActivity.Companion.navController
 import fr.paf.todaysmission.models.Group
 
-@Preview
-@Composable
-fun GroupCardPreview(){
-    GroupIncomingCard(Group("1", "MyGroup"), {}, {})
-}
 
 @Composable
 fun GroupIncomingCard(group: Group, onAccept: () -> Unit, onDeny: () -> Unit) {
