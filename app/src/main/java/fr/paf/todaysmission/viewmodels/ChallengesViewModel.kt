@@ -35,10 +35,12 @@ class ChallengesViewModel @Inject constructor(
 
     fun createChallenge(name: String, groupId: String) {
         viewModelScope.launch {
+            //create challenge with repository
             val result = challengesRepository.createChallenge(name, groupId)
 
             result.onSuccess {
                 _message.value = it
+                //reload list of challenge to get new challenge
                 getGroupChallenges(groupId)
             }.onFailure {
                 _message.value = it.message ?: "Erreur lors de la creation du challenge"

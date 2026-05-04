@@ -23,7 +23,7 @@ class GroupsRepository @Inject constructor(
         TokenManager.getToken(context) as String
     }
 
-    suspend fun createGroup(name: String) = withContext(Dispatchers.IO){
+    suspend fun createGroup(name: String): Result<String?> = withContext(Dispatchers.IO){
         val json = """{ "name": "$name" }"""
 
         val body = json.toRequestBody("application/json".toMediaType())
@@ -34,11 +34,17 @@ class GroupsRepository @Inject constructor(
             .post(body)
             .build()
 
-        _client.newCall(request).execute()
+        try {
+            _client.newCall(request).execute()
+            return@withContext Result.success("")
+        } catch (e: Exception) {
+            return@withContext Result.failure(e)
+        }
+
 
     }
 
-    suspend fun inviteToGroup(userId: String, groupId: String) = withContext(Dispatchers.IO){
+    suspend fun inviteToGroup(userId: String, groupId: String): Result<String?> = withContext(Dispatchers.IO){
         val json = """{ "user": "$userId", "groupId" : "$groupId" }"""
 
         val body = json.toRequestBody("application/json".toMediaType())
@@ -49,7 +55,12 @@ class GroupsRepository @Inject constructor(
             .post(body)
             .build()
 
-        _client.newCall(request).execute()
+        try{
+            _client.newCall(request).execute()
+            return@withContext Result.success("")
+        } catch (e: Exception) {
+            return@withContext Result.failure(e)
+        }
     }
 
     suspend fun acceptRequestToGroup(groupId: String) = withContext(Dispatchers.IO){
@@ -63,7 +74,12 @@ class GroupsRepository @Inject constructor(
             .post(body)
             .build()
 
-        _client.newCall(request).execute()
+        try{
+            _client.newCall(request).execute()
+            return@withContext Result.success("")
+        } catch (e: Exception) {
+            return@withContext Result.failure(e)
+        }
     }
 
     suspend fun denyRequestToGroup(groupId: String) = withContext(Dispatchers.IO){
@@ -77,7 +93,12 @@ class GroupsRepository @Inject constructor(
             .post(body)
             .build()
 
-        _client.newCall(request).execute()
+        try{
+            _client.newCall(request).execute()
+            return@withContext Result.success("")
+        } catch (e: Exception) {
+            return@withContext Result.failure(e)
+        }
     }
 
     suspend fun getGroups(): Result<List<Group>> = withContext(Dispatchers.IO){

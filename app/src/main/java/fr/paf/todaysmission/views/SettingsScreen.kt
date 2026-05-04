@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import fr.paf.todaysmission.viewmodels.FriendViewModels
 import fr.paf.todaysmission.utils.State
+import fr.paf.todaysmission.viewmodels.LoginViewModel
 
 var token: String = "";
 var url: String = "http://10.57.32.230"
@@ -150,17 +151,17 @@ private fun friends_list(state: State, friends: List<fr.paf.todaysmission.models
             CircularProgressIndicator()
         }
         State.ERROR -> Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-            Text("Impossible de charger les amis", color = Color.Gray)
+            Text("Unable to load friends", color = Color.Gray)
         }
         State.SUCCESS -> {
             if (friends.isEmpty()) {
                 Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                    Text("Aucun ami pour l'instant", color = Color.Gray)
+                    Text("No friends yet", color = Color.Gray)
                 }
             } else {
                 LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
                     itemsIndexed(friends) { index, friend ->
-                        FriendRow(name = friend.name, color = avatarColors[index % avatarColors.size])
+                        FriendRow(userId = friend.id, name = friend.name, color = avatarColors[index % avatarColors.size])
                         if (index < friends.lastIndex) {
                             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                         }
@@ -172,7 +173,7 @@ private fun friends_list(state: State, friends: List<fr.paf.todaysmission.models
 }
 
 @Composable
-private fun FriendRow(name: String, color: Color) {
+private fun FriendRow(userId: String, name: String, color: Color, friendsViewModel: FriendViewModels = hiltViewModel()) {
     Surface(color = Color.White) {
         Row(
             modifier = Modifier
@@ -199,15 +200,15 @@ private fun FriendRow(name: String, color: Color) {
             Spacer(modifier = Modifier.width(12.dp))
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935)),
+                onClick = { friendsViewModel.deleteFriend(userId) },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF6C6C)),
                 shape = RoundedCornerShape(10.dp),
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                    horizontal = 14.dp,
+                    horizontal = 16.dp,
                     vertical = 10.dp
                 )
             ) {
-                Text(text = "Supprimer", color = Color.White, fontWeight = FontWeight.SemiBold)
+                Text(text = "Delete", color = Color.White, fontWeight = FontWeight.SemiBold)
             }
         }
     }
