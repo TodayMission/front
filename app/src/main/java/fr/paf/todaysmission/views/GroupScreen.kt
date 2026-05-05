@@ -52,11 +52,9 @@ import androidx.navigation.NavController
 import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.MessageCard
 import fr.paf.todaysmission.models.Messages
-import fr.paf.todaysmission.models.msg_test
 import fr.paf.todaysmission.viewmodels.ChallengesViewModel
 import fr.paf.todaysmission.viewmodels.GroupsViewModels
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,13 +70,13 @@ fun GroupScreen(
     val scope = rememberCoroutineScope()
     val joinMessage by challengesViewModel.message.collectAsState()
     val challenges by challengesViewModel.challenges.collectAsState()
-    var messages = groupViewModel.messages.collectAsState()
-
-//    var messages by remember { mutableStateOf(msg_test) }
+    val messages by groupViewModel.messages.collectAsState()
 
     LaunchedEffect(id) {
         //get challenge of groups
         challengesViewModel.getGroupChallenges(id)
+        //get messages of groups
+        groupViewModel.getMessages(id)
     }
 
     LaunchedEffect(joinMessage) {
@@ -144,16 +142,16 @@ fun GroupScreen(
                         }
                     }
                 }
-
-                itemsIndexed(messages.value) { _, msg ->
-                    var ms = Messages(
-                        id = "3",
-                        nom = "RANDOM",
-                        msg = msg.get("message") as String,
-                        group_id = msg.get("groupId") as String
+                itemsIndexed(messages) { _, msg ->
+                    val ms = Messages(
+                        id = msg.optString("id", "random"),
+                        nom = msg.optString("nom", "SYSTEME"),
+                        msg = msg.optString("message"),
+                        group_id = msg.optString("groupId")
                     )
-                        MessageCard(ms)
+                    MessageCard(ms)
                 }
+
             }
         }
         BottomBar(
