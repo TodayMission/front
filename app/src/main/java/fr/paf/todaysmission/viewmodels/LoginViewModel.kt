@@ -39,7 +39,6 @@ class LoginViewModel @Inject constructor(private val loginRepository: AuthReposi
                     }
                     _session.value = it
                     _state.value = State.SUCCESS
-                    SocketManager().connect();
                 }
                 .onFailure {
                     _state.value = State.ERROR

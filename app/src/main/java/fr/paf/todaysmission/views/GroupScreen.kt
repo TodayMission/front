@@ -54,14 +54,17 @@ import fr.paf.todaysmission.components.MessageCard
 import fr.paf.todaysmission.models.Messages
 import fr.paf.todaysmission.models.msg_test
 import fr.paf.todaysmission.viewmodels.ChallengesViewModel
+import fr.paf.todaysmission.viewmodels.GroupsViewModels
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupScreen(
     id: String,
     navController: NavController,
-    challengesViewModel: ChallengesViewModel = hiltViewModel()
+    challengesViewModel: ChallengesViewModel = hiltViewModel(),
+    groupViewModel: GroupsViewModels = hiltViewModel()
 ) {
     val context = LocalContext.current
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -69,8 +72,9 @@ fun GroupScreen(
     val scope = rememberCoroutineScope()
     val joinMessage by challengesViewModel.message.collectAsState()
     val challenges by challengesViewModel.challenges.collectAsState()
+    var messages = groupViewModel.messages.collectAsState()
 
-    var messages by remember { mutableStateOf(msg_test) }
+//    var messages by remember { mutableStateOf(msg_test) }
 
     LaunchedEffect(id) {
         //get challenge of groups
@@ -83,6 +87,7 @@ fun GroupScreen(
             challengesViewModel.clearMessage()
         }
     }
+
     Scaffold(
         containerColor = Color(0xFFf2f6fe),
         topBar = {
@@ -140,10 +145,14 @@ fun GroupScreen(
                     }
                 }
 
-                itemsIndexed(messages) { _, msg ->
-                    if (id == msg.group_id) {
-                        MessageCard(msg)
-                    }
+                itemsIndexed(messages.value) { _, msg ->
+                    var ms = Messages(
+                        id = "3",
+                        nom = "RANDOM",
+                        msg = msg.get("message") as String,
+                        group_id = msg.get("groupId") as String
+                    )
+                        MessageCard(ms)
                 }
             }
         }
@@ -151,12 +160,7 @@ fun GroupScreen(
             showBottomSheet,
             onDismiss = { showBottomSheet = true },
             onSendMessage = { message ->
-                messages = messages + Messages(
-                    id = (messages.size + 1).toString(),
-                    nom = "Moi",
-                    msg = message,
-                    group_id = id
-                )
+                groupViewModel.sendMessage(id,message)
             }
         )
         if (showBottomSheet) {

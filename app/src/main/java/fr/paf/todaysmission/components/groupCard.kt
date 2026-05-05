@@ -32,14 +32,20 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import fr.paf.todaysmission.MainActivity.Companion.navController
 import fr.paf.todaysmission.models.Group
+import fr.paf.todaysmission.repository.SocketRepository
+import fr.paf.todaysmission.utils.SocketManager
+import fr.paf.todaysmission.viewmodels.GroupsViewModels
 
 @Composable
-fun GroupCard(group: Group, onClick: NavController) {
+fun GroupCard(group: Group, onClick: NavController, groupsViewModels: GroupsViewModels) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp, 8.dp),
-        onClick = { onClick.navigate("group/${group.id}") },
+        onClick = {
+            onClick.navigate("group/${group.id}")
+            groupsViewModels.joinGroup(group.id)
+            },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

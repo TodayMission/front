@@ -1,25 +1,26 @@
 package fr.paf.todaysmission.utils
 
+import android.util.Log
 import io.socket.client.IO
 import io.socket.client.Socket
 
-class SocketManager {
+object SocketManager {
 
-    private lateinit var socket: Socket
+    lateinit var socket: Socket
 
     fun connect() {
         val options = IO.Options()
 
-        socket = IO.socket("http://192.168.1.56:3000", options)
+        socket = IO.socket("http://10.57.32.5:3000", options)
         socket.connect()
 
         socket.on(Socket.EVENT_CONNECT) {
             println("Connected to server")
         }
 
-        socket.on("message") { args ->
+        socket.on("message-group") { args ->
             val data = args[0]
-            println("Message reçu: $data")
+            Log.d("MINE", "$data")
         }
 
         socket.on(Socket.EVENT_DISCONNECT) {
