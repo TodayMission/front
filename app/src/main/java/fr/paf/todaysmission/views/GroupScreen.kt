@@ -1,5 +1,6 @@
 package fr.paf.todaysmission.views
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,6 +56,7 @@ import fr.paf.todaysmission.components.MessageCard
 import fr.paf.todaysmission.models.Messages
 import fr.paf.todaysmission.models.msg_test
 import fr.paf.todaysmission.viewmodels.ChallengesViewModel
+import fr.paf.todaysmission.viewmodels.GroupsViewModels
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,7 +64,8 @@ import kotlinx.coroutines.launch
 fun GroupScreen(
     id: String,
     navController: NavController,
-    challengesViewModel: ChallengesViewModel = hiltViewModel()
+    challengesViewModel: ChallengesViewModel = hiltViewModel(),
+    groupsViewModel: GroupsViewModels = hiltViewModel()
 ) {
     val context = LocalContext.current
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -69,12 +73,15 @@ fun GroupScreen(
     val scope = rememberCoroutineScope()
     val joinMessage by challengesViewModel.message.collectAsState()
     val challenges by challengesViewModel.challenges.collectAsState()
+    val groupID by groupsViewModel.groupID.collectAsState()
+    val groupName = groupID.firstOrNull()?.name ?: "..."
 
     var messages by remember { mutableStateOf(msg_test) }
 
     LaunchedEffect(id) {
         //get challenge of groups
         challengesViewModel.getGroupChallenges(id)
+        groupsViewModel.getGroupID(id)
     }
 
     LaunchedEffect(joinMessage) {
@@ -93,19 +100,21 @@ fun GroupScreen(
                         titleContentColor = MaterialTheme.colorScheme.primary,
                     ),
                     title = {
-                        Text("My Groups", textAlign = TextAlign.Center)
+                        Text(groupName, textAlign = TextAlign.Center)
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = null,
+                                tint = Color(0xFF039be5)
+                            )
+                        }
                     },
                     actions = {
                         IconButton(onClick = { navController.navigate("invite/${id}") }) {
                             Icon(
                                 imageVector = Icons.Default.Add,
-                                contentDescription = null,
-                                tint = Color(0xFF039be5)
-                            )
-                        }
-                        IconButton(onClick = { navController.navigateUp() }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
                                 contentDescription = null,
                                 tint = Color(0xFF039be5)
                             )
@@ -208,7 +217,7 @@ fun BottomBar(
                     .background(Color(0xFF4F7EFF), CircleShape)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Star,
+                    imageVector = Icons.Default.Add,
                     contentDescription = "Défi",
                     tint = Color.White
                 )
@@ -233,7 +242,7 @@ fun BottomBar(
                     .background(Color(0xFF4F7EFF), CircleShape)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Send,
+                    imageVector = Icons.Outlined.Send,
                     contentDescription = "Send",
                     tint = Color.White
                 )
