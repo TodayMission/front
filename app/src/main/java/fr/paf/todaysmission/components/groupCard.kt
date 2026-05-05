@@ -43,7 +43,7 @@ fun GroupCard(group: Group, onClick: NavController, groupsViewModels: GroupsView
             .fillMaxWidth()
             .padding(12.dp, 8.dp),
         onClick = {
-            onClick.navigate("group/${group.id}")
+            onClick.navigate("group/${group.id}/${group.name}")
             groupsViewModels.joinGroup(group.id)
             },
         shape = RoundedCornerShape(16.dp),
@@ -61,12 +61,16 @@ fun GroupCard(group: Group, onClick: NavController, groupsViewModels: GroupsView
                         .background(Color(0xFF4F46E5), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-//                    Text(
-//                        text = group.avatar,
-//                        color = Color.White,
-//                        fontSize = 24.sp,
-//                        fontWeight = FontWeight.SemiBold
-//                    )
+                    Text(
+                        text = group.name.trim()
+                            .firstOrNull()
+                            ?.uppercaseChar()
+                            ?.toString()
+                            ?: "G",
+                        color = Color.White,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
 
                 Column(
@@ -88,24 +92,6 @@ fun GroupCard(group: Group, onClick: NavController, groupsViewModels: GroupsView
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-//                            Text(
-//                                text = group.lastMessageTime,
-//                                fontSize = 14.sp,
-//                                color = Color.Gray
-//                            )
-                            Box(
-                                modifier = Modifier
-                                    .size(28.dp)
-                                    .background(Color(0xFF4F46E5), CircleShape),
-                                contentAlignment = Alignment.Center
-                            ) {
-//                                Text(
-//                                    text = "${ group.unreadCount }",
-//                                    color = Color.White,
-//                                    fontSize = 14.sp,
-//                                    fontWeight = FontWeight.SemiBold
-//                                )
-                            }
                         }
                     }
                     Row(
@@ -118,12 +104,12 @@ fun GroupCard(group: Group, onClick: NavController, groupsViewModels: GroupsView
                             tint = Color.Gray,
                             modifier = Modifier.size(16.dp)
                         )
-//                        Text(
-//                            text = group.lastMessage,
-//                            fontSize = 14.sp,
-//                            color = Color.Gray,
-//                            modifier = Modifier.padding(start = 8.dp)
-//                        )
+                        Text(
+                            text = group.member_cout,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Gray
+                        )
                     }
                 }
             }

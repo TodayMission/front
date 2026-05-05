@@ -1,5 +1,6 @@
 package fr.paf.todaysmission.views
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -72,7 +73,7 @@ fun ListGroupScreen(navController: NavController, groupsViewModel: GroupsViewMod
                         titleContentColor = MaterialTheme.colorScheme.primary,
                     ),
                     title = {
-                        Text("My Groups", textAlign = TextAlign.Center)
+                        Text("Groups", textAlign = TextAlign.Center)
                     },
                     actions = {
                         IconButton(onClick = { navController.navigate("notif") }) // creation de groupe

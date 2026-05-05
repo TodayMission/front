@@ -7,6 +7,7 @@ import kotlinx.android.parcel.Parcelize
 data class Group(
     val id: String,
     val name: String,
+    val member_cout: String,
 //    val avatar: String,
 //    val lastMessage: String,
 //    val lastMessageTime: String,

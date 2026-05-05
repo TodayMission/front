@@ -143,9 +143,9 @@ class GroupsRepository @Inject constructor(
 
             list.add(
                 Group(
-                    id = obj.optString("group_id"),
-                    name = obj.optString("name", "Unknown")
-                )
+                    id = obj.optString("group_id", "id"),
+                    name = obj.optString("name", "Unknown"),
+                    member_cout = obj.optString("member_count", "Unknown"))
             )
         }
 

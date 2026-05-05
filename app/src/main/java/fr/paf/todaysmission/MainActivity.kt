@@ -7,15 +7,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Group
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -25,10 +22,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.data.Group
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -38,7 +33,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.HiltAndroidApp
+import fr.paf.todaysmission.views.FriendScreen
 import fr.paf.todaysmission.views.GroupScreen
 import fr.paf.todaysmission.views.HomeScreen
 import fr.paf.todaysmission.views.InviteScreen
@@ -102,7 +97,7 @@ class   MainActivity : ComponentActivity() {
         ) { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = "login", // à changer pour spawn sur une autre page
+                startDestination = "home", // à changer pour spawn sur une autre page
                 modifier = Modifier.padding(paddingValues)
             ) {
                 composable("login") {
@@ -119,17 +114,21 @@ class   MainActivity : ComponentActivity() {
                 composable("groups") { ListGroupScreen(navController) }
                 composable("settings") { SettingsScreen() }
                 composable(
-                    "group/{id}",
+                    "group/{id}/{name}",
                     arguments = listOf(
                         navArgument("id") {
+                            type = NavType.StringType
+                            nullable = false
+                        },
+                        navArgument("name") {
                             type = NavType.StringType
                             nullable = false
                         },
                     ))
                 { entry ->
                     val id = entry.arguments?.getString("id") ?: "1"
-                    Log.d("GROUP", id)
-                    GroupScreen(id, navController)
+                    val name = entry.arguments?.getString("name") ?: "..."
+                    GroupScreen(id, name, navController)
                 }
                 composable(
                     route = "upload/{id}",
@@ -143,7 +142,7 @@ class   MainActivity : ComponentActivity() {
                     UploadScreen(id)
                 }
                     composable("friends") { FriendScreen(navController) }
-                    composable("notif") { NotifyScreen() }
+                    composable("notif") { NotifyScreen(navController) }
                     composable("invite/{id}") { entry ->
                         val id = entry.arguments?.getString("id") ?: "1"
                         InviteScreen(id)
@@ -162,19 +161,19 @@ class   MainActivity : ComponentActivity() {
                     NavigationBarItem(
                         selected = currentRoute == "home",
                         onClick = { navController.navigate("home") },
-                        icon = { Icon(Icons.Default.Home, "Home") },
+                        icon = { Icon(Icons.Outlined.Home, "Home") },
                         label = { Text("Home") }
                     )
                     NavigationBarItem(
                         selected = currentRoute == "groups",
                         onClick = { navController.navigate("groups") },
-                        icon = { Icon(Icons.Default.Search, "Group") },
+                        icon = { Icon(Icons.Outlined.Group, "Group") },
                         label = { Text("Group") }
                     )
                     NavigationBarItem(
                         selected = currentRoute == "settings",
                         onClick = { navController.navigate("settings") },
-                        icon = { Icon(Icons.Default.Person, "Settings") },
+                        icon = { Icon(Icons.Outlined.Settings, "Settings") },
                         label = { Text("Settings") }
                     )
                 }

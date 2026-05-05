@@ -1,5 +1,6 @@
 package fr.paf.todaysmission.views
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,9 +63,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun GroupScreen(
     id: String,
+    name: String,
     navController: NavController,
     challengesViewModel: ChallengesViewModel = hiltViewModel(),
-    groupViewModel: GroupsViewModels = hiltViewModel()
+    groupsViewModel: GroupsViewModels = hiltViewModel()
 ) {
     val context = LocalContext.current
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -70,13 +74,13 @@ fun GroupScreen(
     val scope = rememberCoroutineScope()
     val joinMessage by challengesViewModel.message.collectAsState()
     val challenges by challengesViewModel.challenges.collectAsState()
-    val messages by groupViewModel.messages.collectAsState()
+    val messages by groupsViewModel.messages.collectAsState()
 
     LaunchedEffect(id) {
         //get challenge of groups
         challengesViewModel.getGroupChallenges(id)
         //get messages of groups
-        groupViewModel.getMessages(id)
+        groupsViewModel.getMessages(id)
     }
 
     LaunchedEffect(joinMessage) {
@@ -96,19 +100,21 @@ fun GroupScreen(
                         titleContentColor = MaterialTheme.colorScheme.primary,
                     ),
                     title = {
-                        Text("My Groups", textAlign = TextAlign.Center)
+                        Text(name.capitalize(), textAlign = TextAlign.Center)
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = null,
+                                tint = Color(0xFF039be5)
+                            )
+                        }
                     },
                     actions = {
                         IconButton(onClick = { navController.navigate("invite/${id}") }) {
                             Icon(
                                 imageVector = Icons.Default.Add,
-                                contentDescription = null,
-                                tint = Color(0xFF039be5)
-                            )
-                        }
-                        IconButton(onClick = { navController.navigateUp() }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
                                 contentDescription = null,
                                 tint = Color(0xFF039be5)
                             )
@@ -158,7 +164,7 @@ fun GroupScreen(
             showBottomSheet,
             onDismiss = { showBottomSheet = true },
             onSendMessage = { message ->
-                groupViewModel.sendMessage(id,message)
+                groupsViewModel.sendMessage(id,message)
             }
         )
         if (showBottomSheet) {
@@ -210,7 +216,7 @@ fun BottomBar(
                     .background(Color(0xFF4F7EFF), CircleShape)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Star,
+                    imageVector = Icons.Default.Add,
                     contentDescription = "Défi",
                     tint = Color.White
                 )
@@ -235,7 +241,7 @@ fun BottomBar(
                     .background(Color(0xFF4F7EFF), CircleShape)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Send,
+                    imageVector = Icons.Outlined.Send,
                     contentDescription = "Send",
                     tint = Color.White
                 )

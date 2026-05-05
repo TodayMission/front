@@ -65,6 +65,9 @@ fun FriendPendingCard(friend: Users, onDelete: (id: String) -> Unit) {
                         .background(Color(0xFF4F46E5), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
+                    Text(
+                        text = friend.name.firstOrNull()?.uppercase().toString()
+                    )
                 }
 
                 Column(
