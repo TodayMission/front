@@ -54,8 +54,8 @@ import fr.paf.todaysmission.utils.State
 import fr.paf.todaysmission.viewmodels.LoginViewModel
 
 var token: String = "";
-var url: String = "http://10.57.32.230"
-var port: String = "3000"
+var url: String = "https://api.envoys.fr"
+var port: String = ""
 private val avatarColors = listOf(
     Color(0xFF4CAF50),
     Color(0xFF2196F3),

@@ -1,17 +1,21 @@
 package fr.paf.todaysmission.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.paf.todaysmission.models.Group
 import fr.paf.todaysmission.repository.GroupsRepository
+import fr.paf.todaysmission.repository.SocketRepository
+import fr.paf.todaysmission.utils.SocketManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import fr.paf.todaysmission.utils.State
+import org.json.JSONObject
 
 @HiltViewModel
-class GroupsViewModels @Inject constructor(private val groupsRepository: GroupsRepository): ViewModel() {
+class GroupsViewModels @Inject constructor(private val groupsRepository: GroupsRepository, private val socketRepository: SocketRepository): ViewModel() {
 
     private val _state = MutableStateFlow(State.LOADING)
     val state = _state
@@ -24,9 +28,13 @@ class GroupsViewModels @Inject constructor(private val groupsRepository: GroupsR
     private val _error = MutableStateFlow<String?>(null)
     val error = _error
 
+    private val _messages = MutableStateFlow<List<JSONObject>>(emptyList())
+    val messages = _messages
+
     init {
         getGroups()
         getPendingGroups()
+        startListening()
     }
 
     private fun getGroups() {
@@ -41,6 +49,23 @@ class GroupsViewModels @Inject constructor(private val groupsRepository: GroupsR
                 state.value = State.ERROR
                 error.emit("Serveur timeout")
             }
+        }
+    }
+
+    fun sendMessage(groupId: String, message: String) {
+        socketRepository.sendGroupMessage(groupId, message, {
+            messages.value += it
+        })
+    }
+
+    fun joinGroup(groupId: String) {
+        socketRepository.joinGroup(groupId);
+    }
+
+
+    fun startListening() {
+        socketRepository.listenMessages { message ->
+            _messages.value = _messages.value + JSONObject(message)
         }
     }
 
