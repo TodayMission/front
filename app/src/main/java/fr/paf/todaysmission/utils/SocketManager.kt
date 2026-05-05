@@ -1,6 +1,7 @@
 package fr.paf.todaysmission.utils
 
 import android.util.Log
+import fr.paf.todaysmission.repository._baseUrl
 import io.socket.client.IO
 import io.socket.client.Socket
 
@@ -11,7 +12,7 @@ object SocketManager {
     fun connect() {
         val options = IO.Options()
 
-        socket = IO.socket("http://10.57.32.5:3000", options)
+        socket = IO.socket(_baseUrl, options)
         socket.connect()
 
         socket.on(Socket.EVENT_CONNECT) {
