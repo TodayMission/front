@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.paf.todaysmission.repository.AuthRepository
 import fr.paf.todaysmission.repository.AuthSession
+import fr.paf.todaysmission.utils.SocketManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject

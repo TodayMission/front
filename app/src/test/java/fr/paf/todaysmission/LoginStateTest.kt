@@ -32,13 +32,20 @@ class LoginStateTest {
     // regarde si ça marche
     @Test
     fun `login success updates state and session`() = runTest {
+
+        // fake data
         val fakeSession = AuthSession("token123")
 
+        //  Used to define what behaviour is going to be mocked.
         coEvery { repository.login("user", "pass") } returns Result.success(fakeSession)
 
+        // launch task
         viewModel.login("user", "pass")
+
+        // wait
         advanceUntilIdle()
 
+        // verification
         assert(viewModel.state.value == State.SUCCESS)
         assert(viewModel.session.value == fakeSession)
         assert(viewModel.error.value == null)

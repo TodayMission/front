@@ -54,7 +54,6 @@ import androidx.navigation.NavController
 import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.MessageCard
 import fr.paf.todaysmission.models.Messages
-import fr.paf.todaysmission.models.msg_test
 import fr.paf.todaysmission.viewmodels.ChallengesViewModel
 import fr.paf.todaysmission.viewmodels.GroupsViewModels
 import kotlinx.coroutines.launch
@@ -75,13 +74,15 @@ fun GroupScreen(
     val challenges by challengesViewModel.challenges.collectAsState()
     val groupID by groupsViewModel.groupID.collectAsState()
     val groupName = groupID.firstOrNull()?.name ?: "..."
-
     var messages by remember { mutableStateOf(msg_test) }
+    val messages by groupsViewModel.messages.collectAsState()
 
     LaunchedEffect(id) {
         //get challenge of groups
         challengesViewModel.getGroupChallenges(id)
         groupsViewModel.getGroupID(id)
+        //get messages of groups
+        groupsViewModel.getMessages(id)
     }
 
     LaunchedEffect(joinMessage) {
@@ -90,6 +91,7 @@ fun GroupScreen(
             challengesViewModel.clearMessage()
         }
     }
+
     Scaffold(
         containerColor = Color(0xFFf2f6fe),
         topBar = {
@@ -148,24 +150,23 @@ fun GroupScreen(
                         }
                     }
                 }
-
                 itemsIndexed(messages) { _, msg ->
-                    if (id == msg.group_id) {
-                        MessageCard(msg)
-                    }
+                    val ms = Messages(
+                        id = msg.optString("id", "random"),
+                        nom = msg.optString("nom", "SYSTEME"),
+                        msg = msg.optString("message"),
+                        group_id = msg.optString("groupId")
+                    )
+                    MessageCard(ms)
                 }
+
             }
         }
         BottomBar(
             showBottomSheet,
             onDismiss = { showBottomSheet = true },
             onSendMessage = { message ->
-                messages = messages + Messages(
-                    id = (messages.size + 1).toString(),
-                    nom = "Moi",
-                    msg = message,
-                    group_id = id
-                )
+                groupViewModel.sendMessage(id,message)
             }
         )
         if (showBottomSheet) {

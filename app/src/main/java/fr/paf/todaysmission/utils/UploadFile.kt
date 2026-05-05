@@ -2,6 +2,8 @@ package fr.paf.todaysmission.utils
 
 import android.content.Context
 import android.net.Uri
+import fr.paf.todaysmission.repository._baseUrl
+import kotlinx.coroutines.runBlocking
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -29,13 +31,37 @@ fun uploadFile(
         }
     }
 
+    val mimeType = context.contentResolver.getType(uri)
+
+    val extension = when (mimeType) {
+        "image/jpeg" -> ".jpg"
+        "image/png" -> ".png"
+        "image/webp" -> ".webp"
+        "video/mp4" -> ".mp4"
+        "application/pdf" -> ".pdf"
+        else -> ""
+    }
+
+    val fileName = ((uri.lastPathSegment ?: "file")
+        .replace(Regex("[^a-zA-Z0-9._-]"), "_")) + extension
+
     val multipartBody = MultipartBody.Builder()
         .setType(MultipartBody.FORM)
-        .addFormDataPart("file", "upload", requestBody)
+        .addFormDataPart(
+            "file",
+            fileName,
+            requestBody
+        )
         .build()
 
+    val _token = runBlocking {
+        TokenManager.getToken(context) as String
+    }
+
+
     val request = Request.Builder()
-        .url("http://10.0.2.2:3000/challenges/$challengeId/upload?userId=$userId")
+        .url("$_baseUrl/challenges/$challengeId/upload")
+        .addHeader("Authorization", "Bearer $_token")
         .post(multipartBody)
         .build()
 

@@ -121,7 +121,8 @@ fun ListGroupScreen(navController: NavController, groupsViewModel: GroupsViewMod
                         itemsIndexed(groups) { index, superGroup ->
                             GroupCard(
                                 superGroup,
-                                navController
+                                navController,
+                                groupsViewModel
                             )
                         }
                     }
