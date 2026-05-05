@@ -11,7 +11,7 @@ object SocketManager {
     fun connect() {
         val options = IO.Options()
 
-        socket = IO.socket("http://10.57.32.5:3000", options)
+        socket = IO.socket("http://10.57.33.226:3000", options)
         socket.connect()
 
         socket.on(Socket.EVENT_CONNECT) {
