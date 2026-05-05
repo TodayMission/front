@@ -43,7 +43,7 @@ fun GroupCard(group: Group, onClick: NavController, groupsViewModels: GroupsView
             .fillMaxWidth()
             .padding(12.dp, 8.dp),
         onClick = {
-            onClick.navigate("group/${group.id}")
+            onClick.navigate("group/${group.id}/${group.name}")
             groupsViewModels.joinGroup(group.id)
             },
         shape = RoundedCornerShape(16.dp),

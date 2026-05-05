@@ -114,17 +114,21 @@ class   MainActivity : ComponentActivity() {
                 composable("groups") { ListGroupScreen(navController) }
                 composable("settings") { SettingsScreen() }
                 composable(
-                    "group/{id}",
+                    "group/{id}/{name}",
                     arguments = listOf(
                         navArgument("id") {
+                            type = NavType.StringType
+                            nullable = false
+                        },
+                        navArgument("name") {
                             type = NavType.StringType
                             nullable = false
                         },
                     ))
                 { entry ->
                     val id = entry.arguments?.getString("id") ?: "1"
-                    Log.d("GROUP", id)
-                    GroupScreen(id, navController)
+                    val name = entry.arguments?.getString("name") ?: "..."
+                    GroupScreen(id, name, navController)
                 }
                 composable(
                     route = "upload/{id}",

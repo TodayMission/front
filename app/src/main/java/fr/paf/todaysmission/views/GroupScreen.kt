@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -62,6 +63,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun GroupScreen(
     id: String,
+    name: String,
     navController: NavController,
     challengesViewModel: ChallengesViewModel = hiltViewModel(),
     groupsViewModel: GroupsViewModels = hiltViewModel()
@@ -72,15 +74,11 @@ fun GroupScreen(
     val scope = rememberCoroutineScope()
     val joinMessage by challengesViewModel.message.collectAsState()
     val challenges by challengesViewModel.challenges.collectAsState()
-    val groupID by groupsViewModel.groupID.collectAsState()
-    val groupName = groupID.firstOrNull()?.name ?: "..."
-    var messages by remember { mutableStateOf(msg_test) }
     val messages by groupsViewModel.messages.collectAsState()
 
     LaunchedEffect(id) {
         //get challenge of groups
         challengesViewModel.getGroupChallenges(id)
-        groupsViewModel.getGroupID(id)
         //get messages of groups
         groupsViewModel.getMessages(id)
     }
@@ -102,7 +100,7 @@ fun GroupScreen(
                         titleContentColor = MaterialTheme.colorScheme.primary,
                     ),
                     title = {
-                        Text(groupName, textAlign = TextAlign.Center)
+                        Text(name.capitalize(), textAlign = TextAlign.Center)
                     },
                     navigationIcon = {
                         IconButton(onClick = { navController.navigateUp() }) {
@@ -166,7 +164,7 @@ fun GroupScreen(
             showBottomSheet,
             onDismiss = { showBottomSheet = true },
             onSendMessage = { message ->
-                groupViewModel.sendMessage(id,message)
+                groupsViewModel.sendMessage(id,message)
             }
         )
         if (showBottomSheet) {

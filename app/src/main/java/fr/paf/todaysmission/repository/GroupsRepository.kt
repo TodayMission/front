@@ -117,21 +117,6 @@ class GroupsRepository @Inject constructor(
 
     }
 
-    suspend fun getGroupsID(id: String): Result<List<Group>> = withContext(Dispatchers.IO){
-        val request = Request.Builder()
-            .url("$_baseUrl/groups/$id")
-            .addHeader("Authorization", "Bearer $_token")
-            .build()
-
-        try {
-            val response = _client.newCall(request).execute()
-            val body = parseGroups(response.body!!.string())
-            Result.success(body)
-        } catch(e: Exception) {
-            Result.failure(e)
-        }
-    }
-
     suspend fun getPendingGroupsRequest(): Result<List<Group>> = withContext(Dispatchers.IO){
         Log.d("MINE", "Le token est $_token")
         val request = Request.Builder()

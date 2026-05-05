@@ -54,7 +54,6 @@ fun ListGroupScreen(navController: NavController, groupsViewModel: GroupsViewMod
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     val groups by groupsViewModel.groups.collectAsState()
-//    val users_groups by groupsViewModel.groups_users.collectAsState()
     val error by groupsViewModel.error.collectAsState()
     val state by groupsViewModel.state.collectAsState()
 

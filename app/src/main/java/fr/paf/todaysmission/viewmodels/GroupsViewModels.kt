@@ -27,9 +27,6 @@ class GroupsViewModels @Inject constructor(
     private val _groups = MutableStateFlow<List<Group>>(emptyList<Group>())
     val groups = _groups
 
-    private val _groupID = MutableStateFlow<List<Group>>(emptyList<Group>())
-    val groupID = _groupID
-
     private val _groups_pendings = MutableStateFlow<List<Group>>(emptyList<Group>())
     val groups_pendings = _groups_pendings
 
@@ -61,18 +58,6 @@ class GroupsViewModels @Inject constructor(
         }
     }
 
-    fun getGroupID(groupId: String) {
-        viewModelScope.launch {
-            val result = groupsRepository.getGroupsID(groupId)
-
-            result.onSuccess {
-                _groupID.value = it
-            }.onFailure {
-                state.value = State.ERROR
-                error.emit("Serveur timeout")
-            }
-        }
-    }
     fun sendMessage(groupId: String, message: String) {
         socketRepository.sendGroupMessage(groupId, message, {
             messages.value += it
