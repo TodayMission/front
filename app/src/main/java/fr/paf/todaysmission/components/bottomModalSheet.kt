@@ -163,17 +163,6 @@ fun BottomModalSheet(showBottomSheet: Boolean, onDismiss: () -> Unit, sheetState
                             modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
                         )
                     }
-                }else {
-                    OutlinedTextField(
-                        value = "",
-                        onValueChange = { },
-                        placeholder = { Text("Avatar du groupe", color = Color.Gray) },
-                        modifier = Modifier.height(75.dp).padding(0.dp, 10.dp).fillMaxWidth(),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = Color.LightGray
-                        )
-                    );
                 }
                 TextButton(
                     onClick = { onSend(nameValue) },

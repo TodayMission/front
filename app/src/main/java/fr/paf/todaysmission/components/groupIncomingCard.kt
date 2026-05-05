@@ -1,7 +1,5 @@
 package fr.paf.todaysmission.components
 
-import android.content.Intent
-import android.net.http.SslCertificate.saveState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,25 +14,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import fr.paf.todaysmission.MainActivity.Companion.navController
 import fr.paf.todaysmission.models.Group
 
 
@@ -51,7 +42,7 @@ fun GroupIncomingCard(group: Group, onAccept: () -> Unit, onDeny: () -> Unit) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
@@ -59,6 +50,12 @@ fun GroupIncomingCard(group: Group, onAccept: () -> Unit, onDeny: () -> Unit) {
                         .background(Color(0xFF4F46E5), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
+                    Text(
+                        text = group.name.firstOrNull()?.uppercase().toString(),
+                        color = Color.White,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
 
                 Column(
@@ -69,48 +66,46 @@ fun GroupIncomingCard(group: Group, onAccept: () -> Unit, onDeny: () -> Unit) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Top
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = group.name,
+                            text = group.name.capitalize(),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
                         )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
+
+                        Row (verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp))
+                        {
                             Box(
                                 modifier = Modifier
                                     .size(28.dp)
-                                    .background(Color.Green, CircleShape)
+                                    .background(Color(0xFF2ecc71), CircleShape)
                                     .clickable { onAccept() },
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(imageVector = Icons.Default.Check, contentDescription = "")
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Accept Invitation",
+                                    modifier = Modifier.size(16.dp),
+                                    tint = Color.White
+                                )
                             }
                             Box(
                                 modifier = Modifier
                                     .size(28.dp)
-                                    .background(Color.Red, CircleShape)
+                                    .background(Color(0xFFe74c3c), CircleShape)
                                     .clickable { onDeny() },
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(imageVector = Icons.Default.Close, contentDescription = "")
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Deny Acceptation",
+                                    modifier = Modifier.size(16.dp),
+                                    tint = Color.White
+                                )
                             }
                         }
-                    }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 4.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = null,
-                            tint = Color.Gray,
-                            modifier = Modifier.size(16.dp)
-                        )
-
                     }
                 }
             }
