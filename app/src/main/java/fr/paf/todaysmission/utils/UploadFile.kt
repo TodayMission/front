@@ -15,7 +15,8 @@ fun uploadFile(
     context: Context,
     uri: Uri,
     challengeId: String,
-    userId: String
+    userId: String,
+    onSuccess: () -> Unit
 ) {
     val client = OkHttpClient()
 
@@ -72,6 +73,7 @@ fun uploadFile(
 
         override fun onResponse(call: Call, response: Response) {
             println("Upload success: ${response.body?.string()}")
+            onSuccess()
         }
     })
 }

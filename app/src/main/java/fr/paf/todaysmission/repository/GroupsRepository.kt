@@ -23,6 +23,21 @@ class GroupsRepository @Inject constructor(
         TokenManager.getToken(context) as String
     }
 
+    suspend fun getName(id: String): Result<List<Group>> = withContext(Dispatchers.IO){
+        val request = Request.Builder()
+            .url("$_baseUrl/groups?id=$id")
+            .addHeader("Authorization", "Bearer $_token")
+            .build()
+
+        try {
+            val response = _client.newCall(request).execute()
+            val body = parseGroups(response.body!!.string()) ?: emptyList<Group>();
+            Result.success(body)
+        } catch (e: Exception) {
+            return@withContext Result.failure(e)
+        }
+    }
+
     suspend fun createGroup(name: String): Result<String?> = withContext(Dispatchers.IO){
         val json = """{ "name": "$name" }"""
 

@@ -52,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.patrykandpatrick.vico.core.common.shape.Shape
 import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.MessageCard
 import fr.paf.todaysmission.models.Messages
@@ -63,7 +64,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun GroupScreen(
     id: String,
-    name: String,
     navController: NavController,
     challengesViewModel: ChallengesViewModel = hiltViewModel(),
     groupsViewModel: GroupsViewModels = hiltViewModel()
@@ -75,12 +75,16 @@ fun GroupScreen(
     val joinMessage by challengesViewModel.message.collectAsState()
     val challenges by challengesViewModel.challenges.collectAsState()
     val messages by groupsViewModel.messages.collectAsState()
+    val name by groupsViewModel.name.collectAsState()
 
     LaunchedEffect(id) {
+        //get name of group
+        groupsViewModel.getGroupName(id)
         //get challenge of groups
         challengesViewModel.getGroupChallenges(id)
         //get messages of groups
         groupsViewModel.getMessages(id)
+
     }
 
     LaunchedEffect(joinMessage) {
@@ -137,11 +141,12 @@ fun GroupScreen(
                     )
 
                     if (challenge.isJoined) {
-                        Text(
-                            text = "Vous avez rejoint le challenge",
-                            color = Color(0xFF4CAF50),
+                        Button (
+                            onClick = { navController.navigate("upload/${challenge.id}/${id}") },
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                             modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
-                        )
+                        ) { Text("Envoyer preuve") }
                     } else {
                         JoinChallengeButton {
                             challengesViewModel.joinChallenge(challenge.id, id)
