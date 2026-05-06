@@ -73,7 +73,7 @@ fun ListGroupScreen(navController: NavController, groupsViewModel: GroupsViewMod
                         titleContentColor = MaterialTheme.colorScheme.primary,
                     ),
                     title = {
-                        Text("Groups", textAlign = TextAlign.Center)
+                        Text("Groups", textAlign = TextAlign.Center, color = Color.Black)
                     },
                     actions = {
                         IconButton(onClick = { navController.navigate("notif") }) // creation de groupe
@@ -115,7 +115,7 @@ fun ListGroupScreen(navController: NavController, groupsViewModel: GroupsViewMod
                 State.SUCCESS -> {
                     LazyColumn(
                         modifier = Modifier
-                            .padding(8.dp)
+                            .padding(horizontal = 8.dp)
                     ) {
                         itemsIndexed(groups) { index, superGroup ->
                             GroupCard(
