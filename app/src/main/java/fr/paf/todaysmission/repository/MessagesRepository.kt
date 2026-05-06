@@ -79,7 +79,8 @@ class MessagesRepository @Inject constructor(
             id = obj.optString("id"),
             nom = obj.optString("author_name", "Moi"),
             msg = obj.optString("message"),
-            group_id = obj.optString("group_id")
+            group_id = obj.optString("group_id"),
+            send_at = obj.optString("send_at")
         )
     }
 }

@@ -1,11 +1,13 @@
 package fr.paf.todaysmission.repository
 
 import android.content.Context
+import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.paf.todaysmission.models.Challenge
 import fr.paf.todaysmission.utils.TokenManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -16,12 +18,34 @@ import javax.inject.Inject
 data class GroupChallenge(
     val id: String,
     val name: String,
-    val isJoined: Boolean
+    val isJoined: Boolean,
+    val created_at: String
 )
 
 class ChallengesRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
+
+    suspend fun getProofsChallenge(challengeId: String): Result<List<String?>> = withContext(Dispatchers.IO) {
+        val token = TokenManager.getToken(context).orEmpty()
+
+        val request = Request.Builder()
+            .url("$_baseUrl/upload?id=$challengeId")
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        try {
+            val response = _client.newCall(request).execute()
+            val bodyString = response.body?.string().orEmpty()
+
+            Log.d("MINE", challengeId)
+            Log.d("MINE", bodyString)
+
+            return@withContext Result.success(parseProofs(bodyString))
+        } catch (e: Exception){
+            return@withContext Result.failure(e)
+        }
+    }
     suspend fun getGroupChallenges(groupId: String): Result<List<GroupChallenge>> = withContext(Dispatchers.IO) {
         val token = TokenManager.getToken(context).orEmpty()
 
@@ -46,7 +70,8 @@ class ChallengesRepository @Inject constructor(
                 challenges.add(GroupChallenge(
                     id = item.optString("id"),
                     name = item.optString("name"),
-                    isJoined = item.optBoolean("isJoined")
+                    isJoined = item.optBoolean("isJoined"),
+                    created_at = item.optString("created_at")
                 ))
             }
 
@@ -127,6 +152,21 @@ class ChallengesRepository @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    private fun parseProofs(json: String): List<String> {
+        val list = mutableListOf<String>()
+        val array = JSONArray(json)
+
+        for (i in 0 until array.length()) {
+            val obj = array.getJSONObject(i)
+
+            list.add(
+                obj.optString("path").replace("uploads/", "")
+            )
+        }
+
+        return list
     }
 
     private fun parseChallenges(json: String): List<Challenge> {
