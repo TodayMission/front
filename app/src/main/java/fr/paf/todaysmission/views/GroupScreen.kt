@@ -86,13 +86,13 @@ fun GroupScreen(
     val challenges by challengesViewModel.challenges.collectAsState()
     val messages by groupsViewModel.messages.collectAsState()
     var currentUserId by remember { mutableStateOf<String?>(null) }
+    val messages_merged by groupsViewModel.messages_merged.collectAsState()
+    val name by groupsViewModel.name.collectAsState()
+
 
     LaunchedEffect(id) {
         val token = TokenManager.getToken(context)
         currentUserId = if (token != null) TokenManager.getUserIdFromToken(token) else null
-
-        val messages_merged by groupsViewModel.messages_merged.collectAsState()
-        val name by groupsViewModel.name.collectAsState()
     }
 
     LaunchedEffect(Unit) {
@@ -153,160 +153,173 @@ fun GroupScreen(
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
             LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 50.dp)) {
                 itemsIndexed(messages_merged) { _, msg ->
-                  if(msg.optString("type") == "CHALLENGE") {
-                    val challenge = msg.opt("data") as GroupChallenge
-                    MessageCard(
-                        Messages(
-                            id = challenge.id,
-                            nom = "SYSTEME",
-                            msg = "Challenge ${challenge.name}",
-                            group_id = id,
+                    if (msg.optString("type") == "CHALLENGE") {
+                        val challenge = msg.opt("data") as GroupChallenge
+                        MessageCard(
+                            Messages(
+                                id = challenge.id,
+                                nom = "SYSTEME",
+                                msg = "Challenge ${challenge.name}",
+                                group_id = id,
+                                send_at = ""
+                            ),
+                            true
+                        )
+
+                        if (challenge.isJoined) {
+                            Row() {
+                                Button(
+                                    onClick = { navController.navigate("upload/${challenge.id}/${id}") },
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(
+                                            0xFF4CAF50
+                                        )
+                                    ),
+                                    modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
+                                ) { Text("Envoyer preuve") }
+                                Button(
+                                    onClick = { navController.navigate("group/uploads/${challenge.id}") },
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(
+                                            0xDEDDD5FF
+                                        )
+                                    ),
+                                    modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
+                                ) { Text("Voir preuves") }
+
+                            }
+                        } else {
+                            JoinChallengeButton {
+                                challengesViewModel.joinChallenge(challenge.id, id)
+                            }
+                        }
+                    }}
+                    itemsIndexed(messages) { _, msg ->
+                        val msgUserId = msg.optString("user_id")
+                        val isCurrentUser = msgUserId.isNotEmpty() && msgUserId == currentUserId
+                        val ms = Messages(
+                            id = msg.optString("id", "random"),
+                            nom = msg.optString("nom", "SYSTEME"),
+                            msg = msg.optString("message"),
+                            group_id = msg.optString("groupId").removePrefix("group-"),
+                            user_id = msgUserId.ifEmpty { null },
                             send_at = ""
-                        ),
-                        true
-                    )
+                        )
 
-                    if (challenge.isJoined) {
-                         Row() {
-                            Button (
-                                onClick = { navController.navigate("upload/${challenge.id}/${id}") },
-                                shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-                                modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
-                            ) { Text("Envoyer preuve") }
-                            Button (
-                                onClick = { navController.navigate("group/uploads/${challenge.id}") },
-                                shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xDEDDD5FF)),
-                                modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
-                            ) { Text("Voir preuves") }
-
-                        }
-                    } else {
-                        JoinChallengeButton {
-                            challengesViewModel.joinChallenge(challenge.id, id)
-                        }
+                        MessageCard(ms, false, isCurrentUser)
                     }
+
                 }
-                itemsIndexed(messages) { _, msg ->
-                    val msgUserId = msg.optString("user_id")
-                    val isCurrentUser = msgUserId.isNotEmpty() && msgUserId == currentUserId
-                    val ms = Messages(
-                        id = msg.optString("id", "random"),
-                        nom = msg.optString("nom", "SYSTEME"),
-                        msg = msg.optString("message"),
-                        group_id = msg.optString("groupId").removePrefix("group-"),
-                        user_id = msgUserId.ifEmpty { null },
-                        send_at = ""
-                    )
-
-                    MessageCard(ms, false, isCurrentUser)
+            }
+            BottomBar(
+                showBottomSheet,
+                onDismiss = { showBottomSheet = true },
+                onSendMessage = { message ->
+                    groupsViewModel.sendMessage(id, message)
                 }
-
-            }
-        }
-        BottomBar(
-            showBottomSheet,
-            onDismiss = { showBottomSheet = true },
-            onSendMessage = { message ->
-                groupsViewModel.sendMessage(id,message)
-            }
-        )
-        if (showBottomSheet) {
-            BottomModalSheet(showBottomSheet, onDismiss = { showBottomSheet = false }, sheetState, true, { nameValue ->
-                showBottomSheet = false
-                //create challenge with wiewmodel
-                challengesViewModel.createChallenge(nameValue, id)
-                scope.launch {
-                    sheetState.hide()
-                }
-            })
-        }
-    }
-}
-
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-fun BottomBar(
-    showBottomSheet: Boolean,
-    onDismiss: () -> Unit,
-    onSendMessage: (String) -> Unit
-) {
-    var message by remember { mutableStateOf("") }
-
-    fun sendMessage() {
-        val trimmedMessage = message.trim()
-        if (trimmedMessage.isEmpty()) return
-
-        onSendMessage(trimmedMessage)
-        message = ""
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            IconButton(
-                onClick = onDismiss,
-                modifier = Modifier
-                    .size(56.dp)
-                    .background(Color(0xFF4F7EFF), CircleShape)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Défi",
-                    tint = Color.White
-                )
-            }
-
-            OutlinedTextField(
-                value = message,
-                onValueChange = { message = it },
-                placeholder = { Text("Tapez votre message...", color = Color.Gray) },
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(24.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = Color.LightGray,
-                    focusedBorderColor = Color(0xFF4F7EFF),
-                    unfocusedContainerColor = Color.White,
-                    focusedContainerColor = Color.White
-                )
             )
-
-            IconButton(
-                onClick = { sendMessage() },
-                modifier = Modifier
-                    .size(56.dp)
-                    .background(Color(0xFF4F7EFF), CircleShape)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Send,
-                    contentDescription = "Send",
-                    tint = Color.White
-                )
+            if (showBottomSheet) {
+                BottomModalSheet(
+                    showBottomSheet,
+                    onDismiss = { showBottomSheet = false },
+                    sheetState,
+                    true,
+                    { nameValue ->
+                        showBottomSheet = false
+                        //create challenge with wiewmodel
+                        challengesViewModel.createChallenge(nameValue, id)
+                        scope.launch {
+                            sheetState.hide()
+                        }
+                    })
             }
         }
     }
-}
 
-@Composable
-fun JoinChallengeButton(onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(bottomEnd = 12.dp, bottomStart = 12.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+    @Composable
+    @OptIn(ExperimentalMaterial3Api::class)
+    fun BottomBar(
+        showBottomSheet: Boolean,
+        onDismiss: () -> Unit,
+        onSendMessage: (String) -> Unit
     ) {
-        Text("Rejoindre le challenge", color = Color.White)
+        var message by remember { mutableStateOf("") }
+
+        fun sendMessage() {
+            val trimmedMessage = message.trim()
+            if (trimmedMessage.isEmpty()) return
+
+            onSendMessage(trimmedMessage)
+            message = ""
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(Color(0xFF4F7EFF), CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Défi",
+                        tint = Color.White
+                    )
+                }
+
+                OutlinedTextField(
+                    value = message,
+                    onValueChange = { message = it },
+                    placeholder = { Text("Tapez votre message...", color = Color.Gray) },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = Color.LightGray,
+                        focusedBorderColor = Color(0xFF4F7EFF),
+                        unfocusedContainerColor = Color.White,
+                        focusedContainerColor = Color.White
+                    )
+                )
+
+                IconButton(
+                    onClick = { sendMessage() },
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(Color(0xFF4F7EFF), CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Send,
+                        contentDescription = "Send",
+                        tint = Color.White
+                    )
+                }
+            }
+        }
     }
-}
+
+    @Composable
+    fun JoinChallengeButton(onClick: () -> Unit) {
+        Button(
+            onClick = onClick,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(bottomEnd = 12.dp, bottomStart = 12.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+        ) {
+            Text("Rejoindre le challenge", color = Color.White)
+        }
+    }

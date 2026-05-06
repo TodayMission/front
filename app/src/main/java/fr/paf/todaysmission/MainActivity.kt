@@ -84,7 +84,7 @@ class   MainActivity : ComponentActivity() {
                 bottomBarState.value = true
             }
 
-            "group/{id}/{name}" -> {
+            "group/{id}" -> {
                 bottomBarState.value = false
             }
 
@@ -139,9 +139,8 @@ class   MainActivity : ComponentActivity() {
                 ) { entry ->
                     val id = entry.arguments?.getString("id")
                     val name = entry.arguments?.getString("name")
-                    UploadScreen(id, name)
                     val groupId = entry.arguments!!.getString("groupId")!!
-                    UploadScreen(id, groupId, navController)
+                    UploadScreen(id, name, groupId, navController)
                 }
                     composable("friends") { FriendScreen(navController) }
                     composable("notif") { NotifyScreen(navController) }
