@@ -101,69 +101,6 @@ fun BottomModalSheet(showBottomSheet: Boolean, onDismiss: () -> Unit, sheetState
                         unfocusedBorderColor = Color.LightGray
                     )
                 );
-
-                if (isDefi){
-                    ExposedDropdownMenuBox(
-                        expanded = expanded,
-                        onExpandedChange = { expanded = it },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        OutlinedTextField(
-                            value = if (selectedIndex >= 0) participants_test[selectedIndex] else "",
-                            onValueChange = { },
-                            readOnly = true,
-                            placeholder = { Text("Sélectionner un participant", color = Color.Gray) },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 10.dp)
-                                .testTag("participantDropdownField")
-                                .menuAnchor(),
-                            shape = RoundedCornerShape(24.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedBorderColor = Color.LightGray
-                            )
-                        )
-                        ExposedDropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
-                            modifier = Modifier
-                                .height(300.dp)
-                                .background(
-                                    color = Color.White,
-                                )
-                        ) {
-                            participants_test.forEachIndexed { index, participant ->
-                                DropdownMenuItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(Color.White)
-                                        .testTag("participantItem_$index"),
-                                    onClick = {
-                                        selectedIndex = index
-                                        expanded = false
-                                    },
-                                    text = {
-                                        Text(
-                                            participant,
-                                            color = Color.Black,
-                                            textAlign = TextAlign.Left,
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                    },
-                                )
-                            }
-                        }
-                    }
-                    if (selectedIndex < 0) {
-                        Text(
-                            "Veuillez sélectionner au moins un participant.",
-                            color = Color(0xFFB00020),
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
-                        )
-                    }
-                }
                 TextButton(
                     onClick = { onSend(nameValue) },
                     enabled = canSubmit,
