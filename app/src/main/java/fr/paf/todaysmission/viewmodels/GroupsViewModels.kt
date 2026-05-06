@@ -36,6 +36,8 @@ class GroupsViewModels @Inject constructor(
     private val _messages = MutableStateFlow<List<JSONObject>>(emptyList())
     val messages = _messages
 
+    private val _name = MutableStateFlow<String>("Unknown")
+    val name = _name
     private var currentGroupId: String? = null
 
 
@@ -43,6 +45,21 @@ class GroupsViewModels @Inject constructor(
         getGroups()
         getPendingGroups()
         startListening()
+    }
+
+    fun getGroupName(id: String) {
+        viewModelScope.launch {
+            val results = groupsRepository.getName(id)
+            Log.d("MINE", "Try to get name")
+
+            results.onSuccess {
+                Log.d("MINE", it.toString())
+                _name.value = it.get(0).name
+            }.onFailure {
+                Log.d("MINE", it.toString())
+                error.emit("Serveur timeout")
+            }
+        }
     }
 
     private fun getGroups() {
