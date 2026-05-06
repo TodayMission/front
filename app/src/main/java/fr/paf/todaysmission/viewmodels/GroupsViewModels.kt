@@ -114,7 +114,7 @@ class GroupsViewModels @Inject constructor(
                 socketRepository.sendGroupMessage(groupId, message, {
                     _messages.value += it
                 })
-//                getMessages(groupId)
+//                ages(groupId)
             }.onFailure {
                 error.emit(it.message ?: "Erreur lors de l'envoi du message")
             }
@@ -133,7 +133,8 @@ class GroupsViewModels @Inject constructor(
             val groupId = currentGroupId
 
             if (groupId != null && socketGroupId == groupId) {
-                getMessages(groupId)
+                _messages.value += socketMessage
+//                getMessages(groupId)
             } else {
                 _messages.value += socketMessage
             }
