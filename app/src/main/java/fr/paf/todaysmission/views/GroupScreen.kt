@@ -57,10 +57,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.patrykandpatrick.vico.core.common.shape.Shape
 import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.MessageCard
+import fr.paf.todaysmission.models.Challenge
+import fr.paf.todaysmission.models.Group
 import fr.paf.todaysmission.models.Messages
 import fr.paf.todaysmission.utils.TokenManager
+import fr.paf.todaysmission.repository.GroupChallenge
 import fr.paf.todaysmission.viewmodels.ChallengesViewModel
 import fr.paf.todaysmission.viewmodels.GroupsViewModels
 import kotlinx.coroutines.launch
@@ -70,7 +74,6 @@ import org.intellij.lang.annotations.JdkConstants
 @Composable
 fun GroupScreen(
     id: String,
-    name: String,
     navController: NavController,
     challengesViewModel: ChallengesViewModel = hiltViewModel(),
     groupsViewModel: GroupsViewModels = hiltViewModel()
@@ -88,10 +91,23 @@ fun GroupScreen(
         val token = TokenManager.getToken(context)
         currentUserId = if (token != null) TokenManager.getUserIdFromToken(token) else null
 
+        val messages_merged by groupsViewModel.messages_merged.collectAsState()
+        val name by groupsViewModel.name.collectAsState()
+    }
+
+    LaunchedEffect(Unit) {
+        //get name of group
+        groupsViewModel.getGroupName(id)
         //get challenge of groups
         challengesViewModel.getGroupChallenges(id)
         //get messages of groups
         groupsViewModel.getMessages(id)
+
+//        groupsViewModel.mergeData(challenges, messages)
+    }
+
+    LaunchedEffect(challenges, messages) {
+        groupsViewModel.mergeData(challenges, messages)
     }
     LaunchedEffect(joinMessage) {
         joinMessage?.let {
@@ -136,34 +152,35 @@ fun GroupScreen(
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
             LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 50.dp)) {
-                itemsIndexed(challenges) { _, challenge ->
+                itemsIndexed(messages_merged) { _, msg ->
+                  if(msg.optString("type") == "CHALLENGE") {
+                    val challenge = msg.opt("data") as GroupChallenge
                     MessageCard(
                         Messages(
                             id = challenge.id,
                             nom = "SYSTEME",
                             msg = "Challenge ${challenge.name}",
-                            group_id = id
+                            group_id = id,
+                            send_at = ""
                         ),
                         true
                     )
 
                     if (challenge.isJoined) {
-                        Box(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .background(Color.White)
-                                .clip(RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                        ){
-                            Text(
-                                text = "Vous avez rejoint le challenge",
-                                color = Color(0xFF4CAF50),
-                                style = TextStyle(
-                                    fontSize = 14.sp
-                                ),
-                                modifier = Modifier.padding(start = 50.dp, bottom = 14.dp, top = 14.dp)
-                            )
+                         Row() {
+                            Button (
+                                onClick = { navController.navigate("upload/${challenge.id}/${id}") },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                                modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
+                            ) { Text("Envoyer preuve") }
+                            Button (
+                                onClick = { navController.navigate("group/uploads/${challenge.id}") },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xDEDDD5FF)),
+                                modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
+                            ) { Text("Voir preuves") }
+
                         }
                     } else {
                         JoinChallengeButton {
@@ -178,8 +195,9 @@ fun GroupScreen(
                         id = msg.optString("id", "random"),
                         nom = msg.optString("nom", "SYSTEME"),
                         msg = msg.optString("message"),
-                        group_id = msg.optString("groupId"),
-                        user_id = msgUserId.ifEmpty { null }
+                        group_id = msg.optString("groupId").removePrefix("group-"),
+                        user_id = msgUserId.ifEmpty { null },
+                        send_at = ""
                     )
 
                     MessageCard(ms, false, isCurrentUser)

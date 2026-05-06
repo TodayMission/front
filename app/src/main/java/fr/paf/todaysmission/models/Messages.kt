@@ -9,5 +9,6 @@ data class Messages(
     val nom: String,
     val msg: String,
     val group_id: String,
-    val user_id: String? = null
+    val user_id: String? = null,
+    val send_at: String?
 ): Parcelable

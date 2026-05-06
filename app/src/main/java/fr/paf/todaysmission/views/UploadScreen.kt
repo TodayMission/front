@@ -24,7 +24,10 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import fr.paf.todaysmission.utils.uploadFile
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -56,12 +59,12 @@ fun VideoPlayer(uri: Uri) {
 }
 
 @Composable
-fun UploadScreen(challengeId: String?, challengeName: String?) {
-
+fun UploadScreen(challengeId: String?, challengeName: String?, groupId: String, navController: NavController) {
     val context = LocalContext.current
 
     var selectedFile by remember { mutableStateOf<Uri?>(null) }
     var fileType by remember { mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
 
     val filePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
@@ -151,7 +154,8 @@ fun UploadScreen(challengeId: String?, challengeName: String?) {
                     context = context,
                     uri = uri,
                     challengeId = challengeId ?: "1",
-                    userId = "1"
+                    userId = "1",
+        {             scope.launch(Dispatchers.Main) { navController.navigate("group/$groupId") } },
                 )
             }
         }, colors =  ButtonDefaults.buttonColors(containerColor = Color(0xFF3498db)),

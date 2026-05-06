@@ -12,6 +12,7 @@ private val Context.dataStore by preferencesDataStore(name = "app_prefs")
 object TokenManager {
 
     private val TOKEN_KEY = stringPreferencesKey("auth_token")
+    private val USER_NAME_KEY = stringPreferencesKey("user_name")
 
     suspend fun saveToken(context: Context, token: String) {
         context.dataStore.edit { prefs ->
@@ -22,6 +23,17 @@ object TokenManager {
     suspend fun getToken(context: Context): String? {
         val prefs = context.dataStore.data.first()
         return prefs[TOKEN_KEY]
+    }
+
+    suspend fun saveUserName(context: Context, name: String) {
+        context.dataStore.edit { prefs ->
+            prefs[USER_NAME_KEY] = name
+        }
+    }
+
+    suspend fun getUserName(context: Context): String? {
+        val prefs = context.dataStore.data.first()
+        return prefs[USER_NAME_KEY]
     }
 
     suspend fun getUserIdFromToken(token: String): String? {

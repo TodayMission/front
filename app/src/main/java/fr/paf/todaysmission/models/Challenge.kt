@@ -13,4 +13,5 @@ data class Challenge (
     val status: Boolean,
     val member_count: String,
     val date_end: String,
+    val group_id: String
 ): Parcelable

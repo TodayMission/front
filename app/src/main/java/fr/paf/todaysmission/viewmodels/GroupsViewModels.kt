@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.paf.todaysmission.models.Group
+import fr.paf.todaysmission.repository.GroupChallenge
 import fr.paf.todaysmission.repository.GroupsRepository
 import fr.paf.todaysmission.repository.MessagesRepository
 import fr.paf.todaysmission.repository.SocketRepository
@@ -36,11 +37,58 @@ class GroupsViewModels @Inject constructor(
     private val _messages = MutableStateFlow<List<JSONObject>>(emptyList())
     val messages = _messages
 
+    private val _messages_merged = MutableStateFlow<List<JSONObject>>(emptyList())
+    val messages_merged = _messages_merged
+
+    private val _name = MutableStateFlow<String>("Unknown")
+    val name = _name
+    private var currentGroupId: String? = null
+
 
     init {
         getGroups()
         getPendingGroups()
         startListening()
+    }
+
+    fun mergeData(
+        challenges: List<GroupChallenge>,
+        messages: List<JSONObject>
+    ) {
+        Log.d("MINE", "passed HERE MERGE")
+
+        val challengeJson = challenges.map { challenge ->
+            JSONObject().apply {
+                put("type", "CHALLENGE")
+                put("id", challenge.id)
+                put("nom", "CHALLENGE")
+                put("groupId", "")
+                put("message", challenge.name)
+                put("send_at", challenge.created_at)
+                put("data", challenge)
+            }
+        }
+
+
+
+        _messages_merged.value = (challengeJson + messages)
+            .sortedBy { obj ->
+                obj.getString("send_at") // ⚠️ doit être un format ISO (yyyy-MM-dd...)
+            }
+
+        Log.d("MINE", _messages_merged.value.toString());
+    }
+
+    fun getGroupName(id: String) {
+        viewModelScope.launch {
+            val results = groupsRepository.getName(id)
+
+            results.onSuccess {
+                _name.value = it.get(0).name
+            }.onFailure {
+                error.emit("Serveur timeout")
+            }
+        }
     }
 
     private fun getGroups() {
@@ -59,15 +107,14 @@ class GroupsViewModels @Inject constructor(
     }
 
     fun sendMessage(groupId: String, message: String) {
-        socketRepository.sendGroupMessage(groupId, message, {
-            messages.value += it
-        })
-
         viewModelScope.launch {
             val result = messagesRepository.sendMessage(groupId, message)
 
             result.onSuccess {
-                getMessages(groupId)
+                socketRepository.sendGroupMessage(groupId, message, {
+                    _messages.value += it
+                })
+//                ages(groupId)
             }.onFailure {
                 error.emit(it.message ?: "Erreur lors de l'envoi du message")
             }
@@ -81,22 +128,36 @@ class GroupsViewModels @Inject constructor(
 
     fun startListening() {
         socketRepository.listenMessages { message ->
-            _messages.value += JSONObject(message)
+            val socketMessage = JSONObject(message)
+            val socketGroupId = socketMessage.optString("groupId").removePrefix("group-")
+            val groupId = currentGroupId
+
+            if (groupId != null && socketGroupId == groupId) {
+                _messages.value += socketMessage
+//                getMessages(groupId)
+            } else {
+                _messages.value += socketMessage
+            }
         }
     }
 
     fun getMessages(groupId: String) {
+        currentGroupId = groupId
+
         viewModelScope.launch {
             val result = messagesRepository.getGroupMessages(groupId)
 
             result.onSuccess {
                 _messages.value = it.map { message ->
-                    JSONObject()
-                        .put("id", message.id)
-                        .put("nom", message.nom)
-                        .put("groupId", message.group_id)
-                        .put("message", message.msg)
-                        .put("user_id", message.user_id ?: "")
+                        JSONObject()
+                            .put("type", "MESSAGE")
+                            .put("id", message.id)
+                            .put("nom", message.nom)
+                            .put("groupId", message.group_id)
+                            .put("message", message.msg)
+                            .put("send_at", message.send_at)
+                            .put("user_id", message.user_id ?: "")
+
                 }
             }.onFailure {
                 error.emit(it.message ?: "Erreur lors du chargement des messages")
