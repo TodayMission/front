@@ -83,7 +83,7 @@ class   MainActivity : ComponentActivity() {
                 bottomBarState.value = true
             }
 
-            "group/{id}" -> {
+            "group/{id}/{name}" -> {
                 bottomBarState.value = false
             }
 
@@ -97,7 +97,7 @@ class   MainActivity : ComponentActivity() {
         ) { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = "home", // à changer pour spawn sur une autre page
+                startDestination = "login", // à changer pour spawn sur une autre page
                 modifier = Modifier.padding(paddingValues)
             ) {
                 composable("login") {
@@ -145,7 +145,7 @@ class   MainActivity : ComponentActivity() {
                     composable("notif") { NotifyScreen(navController) }
                     composable("invite/{id}") { entry ->
                         val id = entry.arguments?.getString("id") ?: "1"
-                        InviteScreen(id)
+                        InviteScreen(id, navController)
                     }
                 }
             }
