@@ -38,9 +38,6 @@ class ChallengesRepository @Inject constructor(
             val response = _client.newCall(request).execute()
             val bodyString = response.body?.string().orEmpty()
 
-            Log.d("MINE", challengeId)
-            Log.d("MINE", bodyString)
-
             return@withContext Result.success(parseProofs(bodyString))
         } catch (e: Exception){
             return@withContext Result.failure(e)

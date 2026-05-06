@@ -78,18 +78,21 @@ fun GroupScreen(
     val joinMessage by challengesViewModel.message.collectAsState()
     val challenges by challengesViewModel.challenges.collectAsState()
     val messages by groupsViewModel.messages.collectAsState()
+    val messages_merged by groupsViewModel.messages_merged.collectAsState()
     val name by groupsViewModel.name.collectAsState()
 
-    LaunchedEffect(id) {
+    LaunchedEffect(Unit) {
         //get name of group
         groupsViewModel.getGroupName(id)
         //get challenge of groups
         challengesViewModel.getGroupChallenges(id)
         //get messages of groups
         groupsViewModel.getMessages(id)
+
+//        groupsViewModel.mergeData(challenges, messages)
     }
 
-    LaunchedEffect(challenges) {
+    LaunchedEffect(challenges, messages) {
         groupsViewModel.mergeData(challenges, messages)
     }
 
@@ -136,7 +139,7 @@ fun GroupScreen(
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize().background(Color.White)) {
             LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 10.dp)) {
-                itemsIndexed(messages) { _, msg ->
+                itemsIndexed(messages_merged)  { _, msg ->
                     if(msg.optString("type") == "CHALLENGE") {
                         val challenge = msg.opt("data") as GroupChallenge
                         MessageCard(
