@@ -96,6 +96,7 @@ class GroupsViewModels @Inject constructor(
                         .put("nom", message.nom)
                         .put("groupId", message.group_id)
                         .put("message", message.msg)
+                        .put("user_id", message.user_id ?: "")
                 }
             }.onFailure {
                 error.emit(it.message ?: "Erreur lors du chargement des messages")

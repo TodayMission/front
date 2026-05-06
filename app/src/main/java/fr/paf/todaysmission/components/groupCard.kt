@@ -58,7 +58,7 @@ fun GroupCard(group: Group, onClick: NavController, groupsViewModels: GroupsView
                 Box(
                     modifier = Modifier
                         .size(56.dp)
-                        .background(Color(0xFF4F46E5), CircleShape),
+                        .background(Color(0xFF3498db), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(

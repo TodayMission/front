@@ -1,11 +1,13 @@
 package fr.paf.todaysmission.views
 
+import android.graphics.fonts.FontStyle
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,19 +47,24 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.MessageCard
 import fr.paf.todaysmission.models.Messages
+import fr.paf.todaysmission.utils.TokenManager
 import fr.paf.todaysmission.viewmodels.ChallengesViewModel
 import fr.paf.todaysmission.viewmodels.GroupsViewModels
 import kotlinx.coroutines.launch
+import org.intellij.lang.annotations.JdkConstants
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,14 +82,17 @@ fun GroupScreen(
     val joinMessage by challengesViewModel.message.collectAsState()
     val challenges by challengesViewModel.challenges.collectAsState()
     val messages by groupsViewModel.messages.collectAsState()
+    var currentUserId by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(id) {
+        val token = TokenManager.getToken(context)
+        currentUserId = if (token != null) TokenManager.getUserIdFromToken(token) else null
+
         //get challenge of groups
         challengesViewModel.getGroupChallenges(id)
         //get messages of groups
         groupsViewModel.getMessages(id)
     }
-
     LaunchedEffect(joinMessage) {
         joinMessage?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -100,7 +110,7 @@ fun GroupScreen(
                         titleContentColor = MaterialTheme.colorScheme.primary,
                     ),
                     title = {
-                        Text(name.capitalize(), textAlign = TextAlign.Center)
+                        Text(name.capitalize(), textAlign = TextAlign.Center, color = Color.Black)
                     },
                     navigationIcon = {
                         IconButton(onClick = { navController.navigateUp() }) {
@@ -124,8 +134,8 @@ fun GroupScreen(
             }
         },
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding).fillMaxSize().background(Color.White)) {
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 10.dp)) {
+        Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+            LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 50.dp)) {
                 itemsIndexed(challenges) { _, challenge ->
                     MessageCard(
                         Messages(
@@ -133,15 +143,28 @@ fun GroupScreen(
                             nom = "SYSTEME",
                             msg = "Challenge ${challenge.name}",
                             group_id = id
-                        )
+                        ),
+                        true
                     )
 
                     if (challenge.isJoined) {
-                        Text(
-                            text = "Vous avez rejoint le challenge",
-                            color = Color(0xFF4CAF50),
-                            modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .background(Color.White)
+                                .clip(RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                        ){
+                            Text(
+                                text = "Vous avez rejoint le challenge",
+                                color = Color(0xFF4CAF50),
+                                style = TextStyle(
+                                    fontSize = 14.sp
+                                ),
+                                modifier = Modifier.padding(start = 50.dp, bottom = 14.dp, top = 14.dp)
+                            )
+                        }
                     } else {
                         JoinChallengeButton {
                             challengesViewModel.joinChallenge(challenge.id, id)
@@ -149,13 +172,17 @@ fun GroupScreen(
                     }
                 }
                 itemsIndexed(messages) { _, msg ->
+                    val msgUserId = msg.optString("user_id")
+                    val isCurrentUser = msgUserId.isNotEmpty() && msgUserId == currentUserId
                     val ms = Messages(
                         id = msg.optString("id", "random"),
                         nom = msg.optString("nom", "SYSTEME"),
                         msg = msg.optString("message"),
-                        group_id = msg.optString("groupId")
+                        group_id = msg.optString("groupId"),
+                        user_id = msgUserId.ifEmpty { null }
                     )
-                    MessageCard(ms)
+
+                    MessageCard(ms, false, isCurrentUser)
                 }
 
             }
@@ -230,7 +257,9 @@ fun BottomBar(
                 shape = RoundedCornerShape(24.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = Color.LightGray,
-                    focusedBorderColor = Color(0xFF4F7EFF)
+                    focusedBorderColor = Color(0xFF4F7EFF),
+                    unfocusedContainerColor = Color.White,
+                    focusedContainerColor = Color.White
                 )
             )
 
@@ -255,9 +284,9 @@ fun JoinChallengeButton(onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(bottomEnd = 12.dp, bottomStart = 12.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
     ) {
         Text("Rejoindre le challenge", color = Color.White)
