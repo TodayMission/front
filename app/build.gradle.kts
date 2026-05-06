@@ -50,6 +50,7 @@ dependencies {
         exclude(group = "org.json", module = "json")
     }
     implementation(libs.vico.compose)
+    implementation("io.coil-kt:coil-compose:2.5.0")
     implementation(libs.vico.compose.m2)
     implementation(libs.vico.compose.m3)
     implementation(libs.vico.views)

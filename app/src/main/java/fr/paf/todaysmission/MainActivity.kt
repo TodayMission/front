@@ -40,6 +40,7 @@ import fr.paf.todaysmission.views.InviteScreen
 import fr.paf.todaysmission.views.ListGroupScreen
 import fr.paf.todaysmission.views.LoginScreen
 import fr.paf.todaysmission.views.NotifyScreen
+import fr.paf.todaysmission.views.ProofGroupScreen
 import fr.paf.todaysmission.views.SettingsScreen
 import fr.paf.todaysmission.views.UploadScreen
 
@@ -143,6 +144,17 @@ class   MainActivity : ComponentActivity() {
                         val id = entry.arguments?.getString("id") ?: "1"
                         InviteScreen(id)
                     }
+                composable(
+                    route = "group/uploads/{id}",
+                    arguments = listOf(
+                        navArgument("id") {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { entry ->
+                    val id = entry.arguments?.getString("id")!!
+                    ProofGroupScreen(id, navController)
+                }
                 }
             }
         }

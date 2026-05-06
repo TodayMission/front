@@ -55,7 +55,10 @@ import androidx.navigation.NavController
 import com.patrykandpatrick.vico.core.common.shape.Shape
 import fr.paf.todaysmission.components.BottomModalSheet
 import fr.paf.todaysmission.components.MessageCard
+import fr.paf.todaysmission.models.Challenge
+import fr.paf.todaysmission.models.Group
 import fr.paf.todaysmission.models.Messages
+import fr.paf.todaysmission.repository.GroupChallenge
 import fr.paf.todaysmission.viewmodels.ChallengesViewModel
 import fr.paf.todaysmission.viewmodels.GroupsViewModels
 import kotlinx.coroutines.launch
@@ -84,7 +87,10 @@ fun GroupScreen(
         challengesViewModel.getGroupChallenges(id)
         //get messages of groups
         groupsViewModel.getMessages(id)
+    }
 
+    LaunchedEffect(challenges) {
+        groupsViewModel.mergeData(challenges, messages)
     }
 
     LaunchedEffect(joinMessage) {
@@ -130,37 +136,49 @@ fun GroupScreen(
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize().background(Color.White)) {
             LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 10.dp)) {
-                itemsIndexed(challenges) { _, challenge ->
-                    MessageCard(
-                        Messages(
-                            id = challenge.id,
-                            nom = "SYSTEME",
-                            msg = "Challenge ${challenge.name}",
-                            group_id = id
+                itemsIndexed(messages) { _, msg ->
+                    if(msg.optString("type") == "CHALLENGE") {
+                        val challenge = msg.opt("data") as GroupChallenge
+                        MessageCard(
+                            Messages(
+                                id = challenge.id,
+                                nom = "SYSTEME",
+                                msg = "Challenge ${challenge.name}",
+                                group_id = id,
+                                send_at = ""
+                            )
                         )
-                    )
 
                     if (challenge.isJoined) {
-                        Button (
-                            onClick = { navController.navigate("upload/${challenge.id}/${id}") },
-                            shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-                            modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
-                        ) { Text("Envoyer preuve") }
+                        Row() {
+                            Button (
+                                onClick = { navController.navigate("upload/${challenge.id}/${id}") },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                                modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
+                            ) { Text("Envoyer preuve") }
+                            Button (
+                                onClick = { navController.navigate("group/uploads/${challenge.id}") },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xDEDDD5FF)),
+                                modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
+                            ) { Text("Voir preuves") }
+                        }
                     } else {
                         JoinChallengeButton {
                             challengesViewModel.joinChallenge(challenge.id, id)
                         }
                     }
-                }
-                itemsIndexed(messages) { _, msg ->
-                    val ms = Messages(
-                        id = msg.optString("id", "random"),
-                        nom = msg.optString("nom", "SYSTEME"),
-                        msg = msg.optString("message"),
-                        group_id = msg.optString("groupId").removePrefix("group-")
-                    )
-                    MessageCard(ms)
+                    } else {
+                        val ms = Messages(
+                            id = msg.optString("id", "random"),
+                            nom = msg.optString("nom", "SYSTEME"),
+                            msg = msg.optString("message"),
+                            group_id = msg.optString("groupId").removePrefix("group-"),
+                            send_at = ""
+                        )
+                        MessageCard(ms)
+                    }
                 }
 
             }
