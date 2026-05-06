@@ -37,6 +37,9 @@ class GroupsViewModels @Inject constructor(
     private val _messages = MutableStateFlow<List<JSONObject>>(emptyList())
     val messages = _messages
 
+    private val _messages_merged = MutableStateFlow<List<JSONObject>>(emptyList())
+    val messages_merged = _messages_merged
+
     private val _name = MutableStateFlow<String>("Unknown")
     val name = _name
     private var currentGroupId: String? = null
@@ -68,24 +71,21 @@ class GroupsViewModels @Inject constructor(
 
 
 
-        _messages.value = (challengeJson + messages)
+        _messages_merged.value = (challengeJson + messages)
             .sortedBy { obj ->
                 obj.getString("send_at") // ⚠️ doit être un format ISO (yyyy-MM-dd...)
             }
 
-        Log.d("MINE", _messages.value.toString());
+        Log.d("MINE", _messages_merged.value.toString());
     }
 
     fun getGroupName(id: String) {
         viewModelScope.launch {
             val results = groupsRepository.getName(id)
-            Log.d("MINE", "Try to get name")
 
             results.onSuccess {
-                Log.d("MINE", it.toString())
                 _name.value = it.get(0).name
             }.onFailure {
-                Log.d("MINE", it.toString())
                 error.emit("Serveur timeout")
             }
         }
