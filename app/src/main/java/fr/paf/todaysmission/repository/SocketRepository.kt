@@ -1,10 +1,16 @@
 package fr.paf.todaysmission.repository
 
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.paf.todaysmission.utils.SocketManager
+import fr.paf.todaysmission.utils.TokenManager
+import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import javax.inject.Inject
 
-class  SocketRepository @Inject constructor() {
+class  SocketRepository @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
 
     fun listenMessages(onMessage: (String) -> Unit) {
 
@@ -19,7 +25,12 @@ class  SocketRepository @Inject constructor() {
 
     fun sendGroupMessage(groupId: String, message: String, onSend: (JSONObject) -> Unit) {
         var data = JSONObject()
+        val token = runBlocking { TokenManager.getToken(context) }
+        val userId = token?.let { runBlocking { TokenManager.getUserIdFromToken(it) } }.orEmpty()
+        val userName = runBlocking { TokenManager.getUserName(context) }.orEmpty()
 
+        data.put("id", userId)
+        data.put("nom", userName.ifBlank { "Moi" })
         data.put("groupId", "group-$groupId")
         data.put("message", message)
 

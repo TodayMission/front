@@ -153,7 +153,7 @@ fun GroupScreen(
                         id = msg.optString("id", "random"),
                         nom = msg.optString("nom", "SYSTEME"),
                         msg = msg.optString("message"),
-                        group_id = msg.optString("groupId")
+                        group_id = msg.optString("groupId").removePrefix("group-")
                     )
                     MessageCard(ms)
                 }

@@ -50,9 +50,18 @@ class AuthRepository @Inject constructor(
                 parsed.optString("token")
                     .ifBlank { parsed.optString("accessToken") }
                     .ifBlank { parsed.optString("access_token") }
+            val userName = parsed
+                .optJSONArray("response")
+                ?.optJSONArray(0)
+                ?.optJSONObject(0)
+                ?.optString("name")
+                .orEmpty()
 
 
             TokenManager.saveToken(context, token)
+            if (userName.isNotBlank()) {
+                TokenManager.saveUserName(context, userName)
+            }
             Result.success(AuthSession(token = token))
         } catch (e: Exception) {
             Result.failure(e)

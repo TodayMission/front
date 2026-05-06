@@ -97,7 +97,7 @@ class   MainActivity : ComponentActivity() {
         ) { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = "home", // à changer pour spawn sur une autre page
+                startDestination = "login", // à changer pour spawn sur une autre page
                 modifier = Modifier.padding(paddingValues)
             ) {
                 composable("login") {
