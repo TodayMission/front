@@ -76,7 +76,7 @@ fun FriendScreen(navController: NavController, friendsViewModel: FriendViewModel
                     Text("Friends", textAlign = TextAlign.Center)
                 },
                 navigationIcon = {
-                    IconButton(onClick = {  }) {
+                    IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = null,

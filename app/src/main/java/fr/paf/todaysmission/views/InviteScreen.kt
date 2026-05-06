@@ -33,11 +33,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import fr.paf.todaysmission.viewmodels.GroupsViewModels
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InviteScreen(groupId: String, groupsViewModels: GroupsViewModels = hiltViewModel()) {
+fun InviteScreen(groupId: String, navController: NavController, groupsViewModels: GroupsViewModels = hiltViewModel()) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var user by remember { mutableStateOf("") }
 
@@ -53,7 +54,7 @@ fun InviteScreen(groupId: String, groupsViewModels: GroupsViewModels = hiltViewM
                     Text("Invite", textAlign = TextAlign.Center)
                 },
                 navigationIcon = {
-                    IconButton(onClick = {  }) {
+                    IconButton(onClick = { navController.navigateUp()  }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = null,

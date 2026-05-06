@@ -80,6 +80,7 @@ class MessagesRepository @Inject constructor(
             nom = obj.optString("author_name", "Moi"),
             msg = obj.optString("message"),
             group_id = obj.optString("group_id"),
+            user_id = obj.optString("user_id"),
             send_at = obj.optString("send_at")
         )
     }

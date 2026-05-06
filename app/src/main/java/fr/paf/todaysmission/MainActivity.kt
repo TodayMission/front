@@ -98,7 +98,7 @@ class   MainActivity : ComponentActivity() {
         ) { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = "login", // à changer pour spawn sur une autre page
+                startDestination = "login",
                 modifier = Modifier.padding(paddingValues)
             ) {
                 composable("login") {
@@ -127,22 +127,26 @@ class   MainActivity : ComponentActivity() {
                     GroupScreen(id, navController)
                 }
                 composable(
-                    route = "upload/{id}/{groupId}",
+                    route = "upload/{id}/{groupId}/{name}",
                     arguments = listOf(
                         navArgument("id") {
+                            type = NavType.StringType
+                        },
+                        navArgument("name") {
                             type = NavType.StringType
                         }
                     )
                 ) { entry ->
                     val id = entry.arguments?.getString("id")
+                    val name = entry.arguments?.getString("name")
                     val groupId = entry.arguments!!.getString("groupId")!!
-                    UploadScreen(id, groupId, navController)
+                    UploadScreen(id, name, groupId, navController)
                 }
                     composable("friends") { FriendScreen(navController) }
                     composable("notif") { NotifyScreen(navController) }
                     composable("invite/{id}") { entry ->
                         val id = entry.arguments?.getString("id") ?: "1"
-                        InviteScreen(id)
+                        InviteScreen(id, navController)
                     }
                 composable(
                     route = "group/uploads/{id}",
