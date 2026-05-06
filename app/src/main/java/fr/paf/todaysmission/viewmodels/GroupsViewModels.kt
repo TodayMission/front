@@ -38,6 +38,7 @@ class GroupsViewModels @Inject constructor(
 
     private val _name = MutableStateFlow<String>("Unknown")
     val name = _name
+    private var currentGroupId: String? = null
 
 
     init {
@@ -77,14 +78,13 @@ class GroupsViewModels @Inject constructor(
     }
 
     fun sendMessage(groupId: String, message: String) {
-        socketRepository.sendGroupMessage(groupId, message, {
-            messages.value += it
-        })
-
         viewModelScope.launch {
             val result = messagesRepository.sendMessage(groupId, message)
 
             result.onSuccess {
+                socketRepository.sendGroupMessage(groupId, message, {
+                    messages.value += it
+                })
                 getMessages(groupId)
             }.onFailure {
                 error.emit(it.message ?: "Erreur lors de l'envoi du message")
@@ -99,11 +99,21 @@ class GroupsViewModels @Inject constructor(
 
     fun startListening() {
         socketRepository.listenMessages { message ->
-            _messages.value += JSONObject(message)
+            val socketMessage = JSONObject(message)
+            val socketGroupId = socketMessage.optString("groupId").removePrefix("group-")
+            val groupId = currentGroupId
+
+            if (groupId != null && socketGroupId == groupId) {
+                getMessages(groupId)
+            } else {
+                _messages.value += socketMessage
+            }
         }
     }
 
     fun getMessages(groupId: String) {
+        currentGroupId = groupId
+
         viewModelScope.launch {
             val result = messagesRepository.getGroupMessages(groupId)
 
