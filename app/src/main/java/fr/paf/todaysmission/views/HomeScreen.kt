@@ -97,7 +97,7 @@ fun HomeScreen(
                         }
                         itemsIndexed(challenges) { _, challenge ->
                             ChallengeCard(challenge) {
-                                navController.navigate("upload/${challenge.id}")
+                                navController.navigate("upload/${challenge.id}/${challenge.name}")
                             }
                         }
                     }

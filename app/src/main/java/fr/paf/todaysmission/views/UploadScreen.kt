@@ -3,7 +3,6 @@ package fr.paf.todaysmission.views
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import android.net.Uri
@@ -11,6 +10,15 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
@@ -48,7 +56,7 @@ fun VideoPlayer(uri: Uri) {
 }
 
 @Composable
-fun UploadScreen(challengeId: String?) {
+fun UploadScreen(challengeId: String?, challengeName: String?) {
 
     val context = LocalContext.current
 
@@ -78,16 +86,31 @@ fun UploadScreen(challengeId: String?) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text("Upload Challenge ID: $challengeId")
+        Text("Upload Challenge: $challengeName")
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(onClick = {
-            filePicker.launch(
-                arrayOf("image/*", "video/*", "application/pdf")
-            )
-        }) {
-            Text("Choisir fichier")
+        Button(
+            onClick = {
+                filePicker.launch(
+                    arrayOf("image/*", "video/*", "application/pdf")
+                )
+            },
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.fillMaxWidth().height(200.dp),
+            colors =  ButtonDefaults.buttonColors(containerColor = Color(0xFFf7f7f9))
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.PhotoCamera,
+                    contentDescription = null,
+                    tint = Color(0xFF3498db)
+                )
+                Text("Choisir un fichier", color = Color.Black)
+            }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -131,7 +154,10 @@ fun UploadScreen(challengeId: String?) {
                     userId = "1"
                 )
             }
-        }) {
+        }, colors =  ButtonDefaults.buttonColors(containerColor = Color(0xFF3498db)),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("Uploader")
         }
     }
