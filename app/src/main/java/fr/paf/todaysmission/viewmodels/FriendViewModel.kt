@@ -78,6 +78,7 @@ class FriendViewModels @Inject constructor(private val friendsRepository: Friend
             val results = friendsRepository.getPendingFriends()
 
             results.onSuccess {
+                Log.d("MINE", it.toString())
                 _friends_pending.value = it
 //                state.value = State.SUCCESS
             }.onFailure {

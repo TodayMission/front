@@ -73,7 +73,7 @@ class GroupsViewModels @Inject constructor(
 
         _messages_merged.value = (challengeJson + messages)
             .sortedBy { obj ->
-                obj.getString("send_at") // ⚠️ doit être un format ISO (yyyy-MM-dd...)
+                obj.optString("send_at", "") // ⚠️ doit être un format ISO (yyyy-MM-dd...)
             }
 
         Log.d("MINE", _messages_merged.value.toString());
