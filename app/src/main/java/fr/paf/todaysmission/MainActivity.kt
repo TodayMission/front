@@ -127,20 +127,19 @@ class   MainActivity : ComponentActivity() {
                     GroupScreen(id, navController)
                 }
                 composable(
-                    route = "upload/{id}/{groupId}/{name}",
+                    route = "upload/{id}/{groupId}",
                     arguments = listOf(
                         navArgument("id") {
                             type = NavType.StringType
                         },
-                        navArgument("name") {
+                        navArgument("groupId") {
                             type = NavType.StringType
                         }
                     )
                 ) { entry ->
                     val id = entry.arguments?.getString("id")
-                    val name = entry.arguments?.getString("name")
                     val groupId = entry.arguments!!.getString("groupId")!!
-                    UploadScreen(id, name, groupId, navController)
+                    UploadScreen(id, groupId, navController)
                 }
                     composable("friends") { FriendScreen(navController) }
                     composable("notif") { NotifyScreen(navController) }

@@ -143,7 +143,6 @@ fun FriendScreen(navController: NavController, friendsViewModel: FriendViewModel
                     modifier = Modifier
                         .padding(8.dp)
                 ) {
-                    if (friends_pending.isEmpty())
                     itemsIndexed(friends_pending) { index, friend_pending ->
                         FriendPendingCard (
                             friend_pending,

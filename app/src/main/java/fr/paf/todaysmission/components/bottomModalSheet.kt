@@ -42,13 +42,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomModalSheet(showBottomSheet: Boolean, onDismiss: () -> Unit, sheetState: SheetState, isDefi: Boolean, onSend: (text: String) -> Unit){
-        val participants_test = listOf(
-            "Theo",
-            "To",
-            "Téo",
-            "Tèo",
-            "T"
-        );
 
         val title = if (isDefi) "Création d'un défi" else  "Création d'un groupe";
         val name = if (isDefi) "Nom du défi" else  "Nom du groupe";
@@ -56,13 +49,7 @@ fun BottomModalSheet(showBottomSheet: Boolean, onDismiss: () -> Unit, sheetState
         var description by remember { mutableStateOf("") }
         val scope = rememberCoroutineScope()
         var expanded by remember { mutableStateOf(false) }
-        var selectedIndex by remember { mutableIntStateOf(-1) }
 
-        val canSubmit = if (isDefi) {
-            nameValue.isNotBlank() && selectedIndex >= 0
-        } else {
-            nameValue.isNotBlank()
-        }
 
         ModalBottomSheet(
             onDismissRequest = onDismiss,
@@ -103,7 +90,6 @@ fun BottomModalSheet(showBottomSheet: Boolean, onDismiss: () -> Unit, sheetState
                 );
                 TextButton(
                     onClick = { onSend(nameValue) },
-                    enabled = canSubmit,
                     shape = RoundedCornerShape(24.dp),
                     colors =
                         ButtonColors(

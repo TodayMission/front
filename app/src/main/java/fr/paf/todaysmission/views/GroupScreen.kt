@@ -195,8 +195,7 @@ fun GroupScreen(
                                 challengesViewModel.joinChallenge(challenge.id, id)
                             }
                         }
-                    }}
-                    itemsIndexed(messages) { _, msg ->
+                    } else {
                         val msgUserId = msg.optString("user_id")
                         val isCurrentUser = msgUserId.isNotEmpty() && msgUserId == currentUserId
                         val ms = Messages(
@@ -210,6 +209,7 @@ fun GroupScreen(
 
                         MessageCard(ms, false, isCurrentUser)
                     }
+                }
 
                 }
             }

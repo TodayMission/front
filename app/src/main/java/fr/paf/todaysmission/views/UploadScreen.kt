@@ -59,7 +59,7 @@ fun VideoPlayer(uri: Uri) {
 }
 
 @Composable
-fun UploadScreen(challengeId: String?, challengeName: String?, groupId: String, navController: NavController) {
+fun UploadScreen(challengeId: String?, groupId: String, navController: NavController) {
     val context = LocalContext.current
 
     var selectedFile by remember { mutableStateOf<Uri?>(null) }
@@ -89,7 +89,7 @@ fun UploadScreen(challengeId: String?, challengeName: String?, groupId: String, 
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text("Upload Challenge: $challengeName")
+//        Text("Upload Challenge: $challengeName")
 
         Spacer(modifier = Modifier.height(20.dp))
 
